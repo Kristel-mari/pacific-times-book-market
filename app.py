@@ -164,6 +164,7 @@ CUSTOMER_HTML = """
             gap: 18px;
             font-size: 15px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .employee-link {
@@ -201,6 +202,7 @@ CUSTOMER_HTML = """
         .hero-buttons {
             display: flex;
             gap: 14px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -358,6 +360,7 @@ CUSTOMER_HTML = """
             justify-content: space-between;
             align-items: center;
             margin-top: 10px;
+            gap: 12px;
         }
 
         .price {
@@ -502,7 +505,6 @@ CUSTOMER_HTML = """
             }
 
             .nav-links {
-                flex-wrap: wrap;
                 justify-content: center;
             }
 
@@ -534,6 +536,7 @@ CUSTOMER_HTML = """
             <a href="#search">Search</a>
             <a href="#">Categories</a>
             <a href="#">Contact</a>
+            <a class="employee-link" href="/customer-signin">Customer Sign In</a>
             <a class="employee-link" href="/employee-signin">Employee Sign In</a>
             <div class="cart-dropdown">
                 <button class="cart-toggle" type="button" onclick="toggleCart()">Cart ({{ cart_count }})</button>
@@ -675,6 +678,207 @@ CUSTOMER_HTML = """
             }
         });
     </script>
+</body>
+</html>
+"""
+
+CUSTOMER_SIGNIN_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacific Times Book Market Customer Sign In</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f5f5, #ffffff);
+            color: #111111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .signin-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.10);
+            padding: 32px;
+            border: 1px solid #dddddd;
+        }
+
+        .signin-card h1 {
+            font-size: 30px;
+            margin-bottom: 12px;
+            color: #111111;
+        }
+
+        .signin-card p {
+            color: #555555;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .signin-form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .signin-form label {
+            font-weight: bold;
+            color: #222222;
+            font-size: 14px;
+        }
+
+        .signin-form input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cccccc;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .customer-btn {
+            background: #111111;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #111111;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="signin-card">
+        <h1>Customer Sign In</h1>
+        <p>Sign in to view your customer dashboard and account details.</p>
+        <form class="signin-form" method="POST" action="/customer-dashboard">
+            <div>
+                <label for="customer_name">Customer Name</label>
+                <input id="customer_name" name="customer_name" type="text" placeholder="Enter your name" />
+            </div>
+            <div>
+                <label for="customer_email">Customer Email</label>
+                <input id="customer_email" name="customer_email" type="email" placeholder="Enter your email" />
+            </div>
+            <button class="customer-btn" type="submit">Sign In</button>
+        </form>
+        <a class="back-link" href="/">← Back to customer store</a>
+    </div>
+</body>
+</html>
+"""
+
+CUSTOMER_DASHBOARD_HTML = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacific Times Book Market Customer Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f7f7f7;
+            color: #111111;
+            padding: 32px;
+        }
+
+        .dashboard-header {
+            background: #111111;
+            color: white;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-header p {
+            color: #dddddd;
+        }
+
+        .dashboard-actions {
+            margin-top: 16px;
+        }
+
+        .dashboard-actions a {
+            display: inline-block;
+            background: white;
+            color: #111111;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .dashboard-card {
+            background: white;
+            border: 1px solid #dddddd;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+            max-width: 700px;
+        }
+
+        .dashboard-card h2 {
+            margin-bottom: 18px;
+        }
+
+        .dashboard-row {
+            margin-bottom: 14px;
+            font-size: 16px;
+        }
+
+        .dashboard-row strong {
+            color: #111111;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <h1>Customer Dashboard</h1>
+        <p>Welcome {{ customer_name if customer_name else 'Customer' }}.</p>
+        <div class="dashboard-actions">
+            <a href="/">Return to storefront</a>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h2>Account Details</h2>
+        <div class="dashboard-row"><strong>Name:</strong> {{ customer_name if customer_name else 'Not provided' }}</div>
+        <div class="dashboard-row"><strong>Email:</strong> {{ customer_email if customer_email else 'Not provided' }}</div>
+        <div class="dashboard-row"><strong>Status:</strong> Signed in</div>
+    </div>
 </body>
 </html>
 """
@@ -1097,6 +1301,23 @@ def clear_cart():
     session["cart"] = {}
     save_and_backup_books(books)
     return redirect(url_for("home"))
+
+
+@app.route("/customer-signin", methods=["GET"])
+def customer_signin():
+    return render_template_string(CUSTOMER_SIGNIN_HTML)
+
+
+@app.route("/customer-dashboard", methods=["POST"])
+def customer_dashboard():
+    customer_name = request.form.get("customer_name", "").strip()
+    customer_email = request.form.get("customer_email", "").strip()
+
+    return render_template_string(
+        CUSTOMER_DASHBOARD_HTML,
+        customer_name=customer_name,
+        customer_email=customer_email,
+    )
 
 
 @app.route("/employee-signin", methods=["GET"])
