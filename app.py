@@ -1,16 +1,123 @@
 from flask import Flask, render_template_string, request, redirect, url_for, session
+import json
+import os
+import shutil
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "pacific_times_secret_key"
 
-BOOKS = [
-    {"id": 1, "title": "The Silent Library", "author": "Ava Hart", "category": "Fiction", "price": 18.99, "inventory": 12, "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80"},
-    {"id": 2, "title": "Pages of Autumn", "author": "Liam Cole", "category": "Romance", "price": 15.49, "inventory": 7, "image": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80"},
-    {"id": 3, "title": "Moonlit Stories", "author": "Nora Blake", "category": "Mystery", "price": 21.00, "inventory": 4, "image": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=800&q=80"},
-    {"id": 4, "title": "Hidden Chapters", "author": "Ethan Wells", "category": "Non-Fiction", "price": 17.75, "inventory": 10, "image": "https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&w=800&q=80"},
-    {"id": 5, "title": "City of Lanterns", "author": "Ava Hart", "category": "Mystery", "price": 19.25, "inventory": 5, "image": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80"},
-    {"id": 6, "title": "Wildflower Letters", "author": "Nora Blake", "category": "Romance", "price": 14.99, "inventory": 9, "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=800&q=80"},
+DATA_FILE = "books.json"
+BACKUP_FOLDER = "backups"
+
+DEFAULT_BOOKS = [
+    {
+        "id": 1,
+        "title": "The Silent Library",
+        "author": "Ava Hart",
+        "category": "Fiction",
+        "price": 18.99,
+        "inventory": 12,
+        "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 2,
+        "title": "Pages of Autumn",
+        "author": "Liam Cole",
+        "category": "Romance",
+        "price": 15.49,
+        "inventory": 7,
+        "image": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 3,
+        "title": "Moonlit Stories",
+        "author": "Nora Blake",
+        "category": "Mystery",
+        "price": 21.00,
+        "inventory": 4,
+        "image": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 4,
+        "title": "Hidden Chapters",
+        "author": "Ethan Wells",
+        "category": "Non-Fiction",
+        "price": 17.75,
+        "inventory": 10,
+        "image": "https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 5,
+        "title": "City of Lanterns",
+        "author": "Ava Hart",
+        "category": "Mystery",
+        "price": 19.25,
+        "inventory": 5,
+        "image": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 6,
+        "title": "Wildflower Letters",
+        "author": "Nora Blake",
+        "category": "Romance",
+        "price": 14.99,
+        "inventory": 9,
+        "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=800&q=80"
+    },
 ]
+
+
+def ensure_data_file():
+    if not os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(DEFAULT_BOOKS, f, indent=4)
+
+
+def load_books():
+    ensure_data_file()
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_books(data):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
+def backup_books():
+    ensure_data_file()
+
+    if not os.path.exists(BACKUP_FOLDER):
+        os.makedirs(BACKUP_FOLDER)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    backup_file = os.path.join(BACKUP_FOLDER, f"books_backup_{timestamp}.json")
+    shutil.copy(DATA_FILE, backup_file)
+
+
+def save_and_backup_books(data):
+    save_books(data)
+    backup_books()
+
+
+def restore_latest_backup():
+    if not os.path.exists(BACKUP_FOLDER):
+        return False, "No backup folder exists."
+
+    backup_files = [
+        f for f in os.listdir(BACKUP_FOLDER)
+        if f.startswith("books_backup_") and f.endswith(".json")
+    ]
+
+    if not backup_files:
+        return False, "No backups available to restore."
+
+    backup_files.sort(reverse=True)
+    latest_backup = os.path.join(BACKUP_FOLDER, backup_files[0])
+    shutil.copy(latest_backup, DATA_FILE)
+    return True, f"Restored inventory from {backup_files[0]}."
+
 
 CUSTOMER_HTML = """
 <!DOCTYPE html>
@@ -719,9 +826,13 @@ EMPLOYEE_DASHBOARD_HTML = """
 
         .employee-actions {
             margin-top: 16px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .employee-actions a {
+        .employee-actions a,
+        .employee-actions form button {
             display: inline-block;
             background: white;
             color: #1d4ed8;
@@ -729,6 +840,8 @@ EMPLOYEE_DASHBOARD_HTML = """
             border-radius: 10px;
             text-decoration: none;
             font-weight: bold;
+            border: none;
+            cursor: pointer;
         }
 
         .dashboard-grid {
@@ -834,6 +947,10 @@ EMPLOYEE_DASHBOARD_HTML = """
         <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}. This area uses a blue and white theme for employee tools.</p>
         <div class="employee-actions">
             <a href="/">Return to customer storefront</a>
+            <form method="POST" action="/restore-backup">
+                <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+                <button type="submit">Restore Latest Backup</button>
+            </form>
         </div>
     </div>
 
@@ -892,13 +1009,18 @@ EMPLOYEE_DASHBOARD_HTML = """
 """
 
 
+def get_books():
+    return load_books()
+
+
 def build_cart_data():
+    books = get_books()
     cart = session.get("cart", {})
     cart_items = []
     cart_total = 0
     cart_count = 0
 
-    for book in BOOKS:
+    for book in books:
         book_id = str(book["id"])
         if book_id in cart:
             quantity = cart[book_id]
@@ -917,19 +1039,21 @@ def build_cart_data():
 
 @app.route("/")
 def home():
+    books = get_books()
+
     title_query = request.args.get("title", "").strip()
     author_query = request.args.get("author", "").strip()
     category_query = request.args.get("category", "").strip()
 
     filtered_books = []
-    for book in BOOKS:
+    for book in books:
         matches_title = title_query.lower() in book["title"].lower() if title_query else True
         matches_author = author_query.lower() in book["author"].lower() if author_query else True
         matches_category = book["category"] == category_query if category_query else True
         if matches_title and matches_author and matches_category:
             filtered_books.append(book)
 
-    categories = sorted({book["category"] for book in BOOKS})
+    categories = sorted({book["category"] for book in books})
     cart_items, cart_total, cart_count = build_cart_data()
 
     return render_template_string(
@@ -947,27 +1071,31 @@ def home():
 
 @app.route("/add-to-cart/<int:book_id>", methods=["POST"])
 def add_to_cart(book_id):
+    books = get_books()
     cart = session.get("cart", {})
-    selected_book = next((book for book in BOOKS if book["id"] == book_id), None)
+    selected_book = next((book for book in books if book["id"] == book_id), None)
 
     if selected_book and selected_book["inventory"] > 0:
         cart[str(book_id)] = cart.get(str(book_id), 0) + 1
         selected_book["inventory"] -= 1
         session["cart"] = cart
+        save_and_backup_books(books)
 
     return redirect(url_for("home"))
 
 
 @app.route("/clear-cart", methods=["POST"])
 def clear_cart():
+    books = get_books()
     cart = session.get("cart", {})
 
-    for book in BOOKS:
+    for book in books:
         quantity = cart.get(str(book["id"]), 0)
         if quantity:
             book["inventory"] += quantity
 
     session["cart"] = {}
+    save_and_backup_books(books)
     return redirect(url_for("home"))
 
 
@@ -979,16 +1107,19 @@ def employee_signin():
 @app.route("/employee-dashboard", methods=["POST"])
 def employee_dashboard():
     employee_name = request.form.get("employee_name", "").strip()
+    books = get_books()
     return render_template_string(
         EMPLOYEE_DASHBOARD_HTML,
         employee_name=employee_name,
-        books=BOOKS,
+        books=books,
         restock_message="",
     )
 
 
 @app.route("/employee-restock", methods=["POST"])
 def employee_restock():
+    books = get_books()
+
     employee_name = request.form.get("employee_name", "").strip()
     book_id = request.form.get("book_id", "").strip()
     invoice_number = request.form.get("invoice_number", "").strip()
@@ -1003,10 +1134,12 @@ def employee_restock():
         book_id_int = None
         quantity_int = 0
 
-    selected_book = next((book for book in BOOKS if book["id"] == book_id_int), None)
+    selected_book = next((book for book in books if book["id"] == book_id_int), None)
 
     if selected_book and quantity_int > 0:
         selected_book["inventory"] += quantity_int
+        save_and_backup_books(books)
+
         if invoice_number:
             restock_message = f"Invoice {invoice_number} processed. Added {quantity_int} unit(s) to {selected_book['title']}."
         else:
@@ -1017,10 +1150,24 @@ def employee_restock():
     return render_template_string(
         EMPLOYEE_DASHBOARD_HTML,
         employee_name=employee_name,
-        books=BOOKS,
+        books=get_books(),
         restock_message=restock_message,
     )
 
 
+@app.route("/restore-backup", methods=["POST"])
+def restore_backup():
+    employee_name = request.form.get("employee_name", "").strip()
+    success, message = restore_latest_backup()
+
+    return render_template_string(
+        EMPLOYEE_DASHBOARD_HTML,
+        employee_name=employee_name,
+        books=get_books(),
+        restock_message=message,
+    )
+
+
 if __name__ == "__main__":
+    ensure_data_file()
     app.run(debug=True)

@@ -1,0 +1,56 @@
+[
+    {
+        "id": 1,
+        "title": "The Silent Library",
+        "author": "Ava Hart",
+        "category": "Fiction",
+        "price": 18.99,
+        "inventory": 12,
+        "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 2,
+        "title": "Pages of Autumn",
+        "author": "Liam Cole",
+        "category": "Romance",
+        "price": 15.49,
+        "inventory": 7,
+        "image": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 3,
+        "title": "Moonlit Stories",
+        "author": "Nora Blake",
+        "category": "Mystery",
+        "price": 21.0,
+        "inventory": 4,
+        "image": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 4,
+        "title": "Hidden Chapters",
+        "author": "Ethan Wells",
+        "category": "Non-Fiction",
+        "price": 17.75,
+        "inventory": 10,
+        "image": "https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 5,
+        "title": "City of Lanterns",
+        "author": "Ava Hart",
+        "category": "Mystery",
+        "price": 19.25,
+        "inventory": 5,
+        "image": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+        "id": 6,
+        "title": "Wildflower Letters",
+        "author": "Nora Blake",
+        "category": "Romance",
+        "price": 14.99,
+        "inventory": 9,
+        "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=800&q=80"
+    }
+]
