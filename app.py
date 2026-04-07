@@ -1148,7 +1148,7 @@ EMPLOYEE_DASHBOARD_HTML = """
 <body>
     <div class="employee-header">
         <h1>Employee Dashboard</h1>
-        <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}. This area uses a blue and white theme for employee tools.</p>
+        <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}.</p>
         <div class="employee-actions">
             <a href="/">Return to customer storefront</a>
             <form method="POST" action="/restore-backup">
