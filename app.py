@@ -116,7 +116,7 @@ def restore_latest_backup():
     backup_files.sort(reverse=True)
     latest_backup = os.path.join(BACKUP_FOLDER, backup_files[0])
     shutil.copy(latest_backup, DATA_FILE)
-    return True, f"Restored inventory from {backup_files[0]}."
+    return True, "Backup restored successfully."
 
 
 CUSTOMER_HTML = """
