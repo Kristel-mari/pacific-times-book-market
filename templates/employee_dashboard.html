@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacific Times Book Market Employee Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #eff6ff;
+            color: #12305b;
+            padding: 32px;
+        }
+
+        .employee-header {
+            background: #2563eb;
+            color: white;
+            border-radius: 18px;
+            padding: 24px 28px;
+            margin-bottom: 24px;
+        }
+
+        .employee-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .employee-header p {
+            color: #dbeafe;
+        }
+
+        .employee-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .employee-actions a,
+        .employee-actions form button {
+            display: inline-block;
+            background: white;
+            color: #1d4ed8;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .inventory-panel,
+        .invoice-panel {
+            background: white;
+            border: 1px solid #bfdbfe;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+        }
+
+        .inventory-panel h2,
+        .invoice-panel h2 {
+            color: #1d4ed8;
+            margin-bottom: 18px;
+        }
+
+        .inventory-row {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr 1fr 1fr;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid #dbeafe;
+            align-items: center;
+        }
+
+        .inventory-row.header {
+            font-weight: bold;
+            color: #1e40af;
+        }
+
+        .invoice-form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .invoice-form label {
+            font-weight: bold;
+            color: #1e40af;
+            font-size: 14px;
+        }
+
+        .invoice-form input,
+        .invoice-form select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #93c5fd;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .employee-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .invoice-note {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #335c99;
+            line-height: 1.5;
+        }
+
+        .success-banner {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .inventory-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="employee-header">
+        <h1>Employee Dashboard</h1>
+        <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}.</p>
+        <div class="employee-actions">
+            <a href="/">Return to customer storefront</a>
+            <form method="POST" action="/restore-backup">
+                <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+                <button type="submit">Restore Latest Backup</button>
+            </form>
+        </div>
+    </div>
+
+    {% if restock_message %}
+    <div class="success-banner">{{ restock_message }}</div>
+    {% endif %}
+
+    <div class="dashboard-grid">
+        <div class="inventory-panel">
+            <h2>Current Inventory Overview</h2>
+            <div class="inventory-row header">
+                <div>Title</div>
+                <div>Author</div>
+                <div>Category</div>
+                <div>Inventory</div>
+            </div>
+            {% for book in books %}
+            <div class="inventory-row">
+                <div>{{ book.title }}</div>
+                <div>{{ book.author }}</div>
+                <div>{{ book.category }}</div>
+                <div>{{ book.inventory }}</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="invoice-panel">
+            <h2>Receive Invoice / Add Inventory</h2>
+            <form class="invoice-form" method="POST" action="/employee-restock">
+                <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+                <div>
+                    <label for="book_id">Select Book</label>
+                    <select id="book_id" name="book_id" required>
+                        {% for book in books %}
+                        <option value="{{ book.id }}">{{ book.title }} — current stock: {{ book.inventory }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label for="invoice_number">Invoice Number</label>
+                    <input id="invoice_number" name="invoice_number" type="text" placeholder="Enter invoice number" />
+                </div>
+                <div>
+                    <label for="quantity_received">Quantity Received</label>
+                    <input id="quantity_received" name="quantity_received" type="number" min="1" placeholder="Enter quantity received" required />
+                </div>
+                <button class="employee-btn" type="submit">Add Inventory</button>
+            </form>
+            <div class="invoice-note">
+                When an employee receives an invoice shipment, this adds new stock into inventory. Because both the employee and customer pages use the same shared book list, the updated count appears in both views.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
