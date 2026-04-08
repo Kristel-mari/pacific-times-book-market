@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pacific Times Book Market Employee Sign In</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #dbeafe, #ffffff);
+            color: #12305b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .signin-card {
+            width: 100%;
+            max-width: 440px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+            padding: 32px;
+            border: 1px solid #bfdbfe;
+        }
+
+        .signin-card h1 {
+            font-size: 30px;
+            margin-bottom: 12px;
+            color: #1d4ed8;
+        }
+
+        .signin-card p {
+            color: #335c99;
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .signin-form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .signin-form label {
+            font-weight: bold;
+            color: #1e40af;
+            font-size: 14px;
+        }
+
+        .signin-form input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #93c5fd;
+            border-radius: 10px;
+            font-size: 15px;
+        }
+
+        .employee-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: #1d4ed8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="signin-card">
+        <h1>Employee Sign In</h1>
+        <p>Please sign in with your employee username and password.</p>
+        {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+        <form class="signin-form" method="POST" action="/login">
+            <div>
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" placeholder="Enter username" required />
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" placeholder="Enter password" required />
+            </div>
+            <button class="employee-btn" type="submit">Sign In</button>
+        </form>
+        <a class="back-link" href="/">← Back to customer store</a>
+    </div>
+</body>
+</html>
