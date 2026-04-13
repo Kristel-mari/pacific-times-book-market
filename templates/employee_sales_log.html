@@ -1,0 +1,268 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sales Log</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3fb;
+            margin: 0;
+            padding: 20px;
+            color: #16325c;
+        }
+
+        .page-wrapper {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+     .top-storefront-link {
+            display: inline-block;
+            padding: 10px 16px;
+            background: white;
+            color: #1f3f8f;
+            text-decoration: none;
+            border: 1px solid #dde6f7;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .top-storefront-link:hover {
+            background: #f7f9fd;
+        }
+
+        .employee-header {
+            background: #2f64e0;
+            color: white;
+            padding: 26px 30px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+        }
+
+        .employee-header h1 {
+            margin: 0 0 8px 0;
+            font-size: 34px;
+            font-weight: 700;
+        }
+
+        .employee-header p {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .ribbon-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #edf0f6;
+            border-radius: 18px;
+            padding: 8px;
+            margin-bottom: 18px;
+            border: 1px solid #dde6f7;
+        }
+
+        .ribbon-button {
+            display: inline-block;
+            padding: 11px 16px;
+            background-color: transparent;
+            color: #1f3f8f;
+            text-decoration: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .ribbon-button.active,
+        .ribbon-button:hover {
+            background-color: white;
+            color: #1b1d2e;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e2e5ee;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 22px;
+            font-size: 22px;
+            color: #16325c;
+        }
+
+        .filters-form {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 7px;
+            color: #214fd1;
+        }
+
+        .filter-group input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #cfd8ee;
+            border-radius: 12px;
+            background: #f7f9fd;
+            font-size: 14px;
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .action-row button,
+        .action-row a {
+            padding: 12px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid #d8dbe6;
+            background: white;
+            color: #161616;
+            cursor: pointer;
+        }
+
+        .action-row .primary {
+            background: #0e1026;
+            color: white;
+            border-color: #0e1026;
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 240px));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #f8f9fc;
+            border: 1px solid #e2e5ee;
+            border-radius: 16px;
+            padding: 16px 18px;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #6f7280;
+        }
+
+        .summary-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 10px;
+            border-bottom: 1px solid #ececf3;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        th {
+            font-size: 15px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+
+    
+        <a class="top-storefront-link" href="/">← Return to Storefront</a>
+
+        <div class="employee-header">
+            <h1>Sales Log & Reports</h1>
+            <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}.</p>
+        </div>
+
+        <div class="ribbon-bar">
+            <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
+            <a class="ribbon-button active" href="{{ url_for('employee_sales_log') }}">Sales</a>
+            <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Inventory</a>
+            <a class="ribbon-button" href="{{ url_for('employee_add_sale') }}">Manual Sale</a>
+        </div>
+
+        <div class="panel">
+            <h2>Sales Log & Reports</h2>
+
+            <div class="summary-row">
+                <div class="summary-card">
+                    <h3>Total Orders</h3>
+                    <p>{{ total_orders }}</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Revenue</h3>
+                    <p>${{ "%.2f"|format(total_revenue) }}</p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sale ID</th>
+                        <th>Date</th>
+                        <th>Book</th>
+                        <th>Author</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                        {% for item in sale["items"] %}
+                        <tr>
+                            <td>{{ sale["order_number"] }}</td>
+                            <td>{{ sale["sale_date"][:10] }}</td>
+                            <td>{{ item["title"] }}</td>
+                            <td>{{ item["author"] }}</td>
+                            <td>{{ item["quantity"] }}</td>
+                            <td>${{ "%.2f"|format(item["price"]) }}</td>
+                            <td>${{ "%.2f"|format(item["subtotal"]) }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7">No sales found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</body>
+</html>
+```

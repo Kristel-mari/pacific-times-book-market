@@ -3,215 +3,338 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pacific Times Book Market Employee Dashboard</title>
+    <title>Employee Dashboard</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        body {
             font-family: Arial, sans-serif;
+            background-color: #eef3fb;
+            margin: 0;
+            padding: 20px;
+            color: #16325c;
         }
 
-        body {
-            background: #eff6ff;
-            color: #12305b;
-            padding: 32px;
+        .page-wrapper {
+            max-width: 1240px;
+            margin: 0 auto;
         }
 
         .employee-header {
-            background: #2563eb;
+            background: #2f64e0;
             color: white;
-            border-radius: 18px;
-            padding: 24px 28px;
-            margin-bottom: 24px;
+            padding: 26px 30px;
+            border-radius: 20px;
+            margin-bottom: 18px;
         }
 
         .employee-header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+            margin: 0 0 8px 0;
+            font-size: 42px;
+            font-weight: 700;
         }
 
         .employee-header p {
-            color: #dbeafe;
+            margin: 0 0 18px 0;
+            font-size: 18px;
         }
 
         .employee-actions {
-            margin-top: 16px;
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .employee-actions a,
-        .employee-actions form button {
-            display: inline-block;
+        .employee-actions button {
             background: white;
-            color: #1d4ed8;
-            padding: 10px 14px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: bold;
+            color: #214fd1;
             border: none;
+            border-radius: 14px;
+            padding: 12px 18px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
             cursor: pointer;
+        }
+
+        .employee-actions form {
+            margin: 0;
+        }
+
+        .ribbon-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #edf0f6;
+            border-radius: 18px;
+            padding: 8px;
+            margin-bottom: 18px;
+            border: 1px solid #dde6f7;
+        }
+
+        .ribbon-button {
+            display: inline-block;
+            padding: 11px 16px;
+            background-color: transparent;
+            color: #1f3f8f;
+            text-decoration: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .ribbon-button.active,
+        .ribbon-button:hover {
+            background-color: white;
+            color: #1b1d2e;
+        }
+
+        .success-banner {
+            background: #dff4df;
+            color: #246b2a;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 240px));
+            gap: 14px;
+            margin-bottom: 18px;
+            justify-content: start;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #d8e3fb;
+            border-radius: 16px;
+            padding: 16px 18px;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 15px;
+            color: #214fd1;
+        }
+
+        .summary-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #16325c;
         }
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1.4fr 1fr;
-            gap: 24px;
-            align-items: start;
+            grid-template-columns: 1.45fr 1fr;
+            gap: 20px;
         }
 
-        .inventory-panel,
-        .invoice-panel {
-            background: white;
-            border: 1px solid #bfdbfe;
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+        .panel {
+            background: #f9fbff;
+            border: 1px solid #bfd3fb;
+            border-radius: 22px;
+            padding: 22px;
         }
 
-        .inventory-panel h2,
-        .invoice-panel h2 {
-            color: #1d4ed8;
-            margin-bottom: 18px;
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #214fd1;
+            font-size: 22px;
         }
 
-        .inventory-row {
-            display: grid;
-            grid-template-columns: 2fr 1.2fr 1fr 1fr;
-            gap: 12px;
-            padding: 14px 0;
-            border-bottom: 1px solid #dbeafe;
-            align-items: center;
-        }
-
-        .inventory-row.header {
-            font-weight: bold;
-            color: #1e40af;
-        }
-
-        .invoice-form {
-            display: grid;
-            gap: 14px;
-        }
-
-        .invoice-form label {
-            font-weight: bold;
-            color: #1e40af;
-            font-size: 14px;
-        }
-
-        .invoice-form input,
-        .invoice-form select {
+        table {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #93c5fd;
-            border-radius: 10px;
-            font-size: 15px;
+            border-collapse: collapse;
         }
 
-        .employee-btn {
-            background: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 13px 16px;
+        th, td {
+            text-align: left;
+            padding: 13px 10px;
+            border-bottom: 1px solid #d8e3fb;
+            font-size: 16px;
+        }
+
+        th {
+            color: #214fd1;
+            font-size: 17px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: #214fd1;
+            margin-bottom: 8px;
+            margin-top: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
             font-size: 15px;
-            font-weight: bold;
+            border-radius: 12px;
+            border: 1px solid #8fb6ff;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        .submit-button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            background: #2f64e0;
+            border: none;
+            border-radius: 12px;
             cursor: pointer;
         }
 
-        .invoice-note {
-            margin-top: 10px;
-            font-size: 14px;
-            color: #335c99;
-            line-height: 1.5;
+        .submit-button:hover {
+            background: #1f4fbf;
         }
 
-        .success-banner {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #93c5fd;
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 18px;
-            font-weight: bold;
-        }
-
-        @media (max-width: 900px) {
+        @media (max-width: 1050px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 700px) {
-            .inventory-row {
+            body {
+                padding: 14px;
+            }
+
+            .employee-header {
+                padding: 20px;
+            }
+
+            .employee-header h1 {
+                font-size: 32px;
+            }
+
+            .employee-header p {
+                font-size: 16px;
+            }
+
+            .summary-row {
                 grid-template-columns: 1fr;
+            }
+
+            .ribbon-button {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="employee-header">
-        <h1>Employee Dashboard</h1>
-        <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}.</p>
-        <div class="employee-actions">
-            <a href="/">Return to customer storefront</a>
-            <form method="POST" action="/restore-backup">
-                <input type="hidden" name="employee_name" value="{{ employee_name }}" />
-                <button type="submit">Restore Latest Backup</button>
-            </form>
-        </div>
-    </div>
+    <div class="page-wrapper">
+        <div class="employee-header">
+            <h1>Employee Dashboard</h1>
+            <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}.</p>
 
-    {% if restock_message %}
-    <div class="success-banner">{{ restock_message }}</div>
-    {% endif %}
+            <div class="employee-actions">
+                <a href="/">Return to customer storefront</a>
 
-    <div class="dashboard-grid">
-        <div class="inventory-panel">
-            <h2>Current Inventory Overview</h2>
-            <div class="inventory-row header">
-                <div>Title</div>
-                <div>Author</div>
-                <div>Category</div>
-                <div>Inventory</div>
+                <form method="POST" action="/restore-backup">
+                    <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+                    <button type="submit">Restore Latest Backup</button>
+                </form>
             </div>
-            {% for book in books %}
-            <div class="inventory-row">
-                <div>{{ book.title }}</div>
-                <div>{{ book.author }}</div>
-                <div>{{ book.category }}</div>
-                <div>{{ book.inventory }}</div>
-            </div>
-            {% endfor %}
         </div>
 
-        <div class="invoice-panel">
-            <h2>Receive Invoice / Add Inventory</h2>
-            <form class="invoice-form" method="POST" action="/employee-restock">
-                <input type="hidden" name="employee_name" value="{{ employee_name }}" />
-                <div>
-                    <label for="book_id">Select Book</label>
-                    <select id="book_id" name="book_id" required>
+        <div class="ribbon-bar">
+            <a class="ribbon-button active" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
+            <a class="ribbon-button" href="{{ url_for('employee_sales_log') }}">Sales</a>
+            <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Inventory</a>
+            <a class="ribbon-button" href="{{ url_for('employee_add_sale') }}">Manual Sale</a>
+        </div>
+
+        {% if restock_message %}
+            <div class="success-banner">{{ restock_message }}</div>
+        {% endif %}
+
+        <div class="summary-row">
+            <div class="summary-card">
+                <h3>Total Orders</h3>
+                <p>{{ total_orders if total_orders is defined else 0 }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Revenue</h3>
+                <p>${{ "%.2f"|format(total_revenue if total_revenue is defined else 0) }}</p>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <h2>Current Inventory Overview</h2>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Category</th>
+                            <th>Inventory</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         {% for book in books %}
-                        <option value="{{ book.id }}">{{ book.title }} — current stock: {{ book.inventory }}</option>
+                        <tr>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.category }}</td>
+                            <td>{{ book.inventory }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="panel">
+                <h2>Receive Invoice / Add Inventory</h2>
+
+                <form method="POST" action="/employee-restock">
+                    <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+
+                    <label for="book_id">Select Book</label>
+                    <select name="book_id" id="book_id" required>
+                        {% for book in books %}
+                        <option value="{{ book.id }}">
+                            {{ book.title }} — current stock: {{ book.inventory }}
+                        </option>
                         {% endfor %}
                     </select>
-                </div>
-                <div>
+
                     <label for="invoice_number">Invoice Number</label>
-                    <input id="invoice_number" name="invoice_number" type="text" placeholder="Enter invoice number" />
-                </div>
-                <div>
+                    <input
+                        type="text"
+                        id="invoice_number"
+                        name="invoice_number"
+                        placeholder="Enter invoice number"
+                    />
+
                     <label for="quantity_received">Quantity Received</label>
-                    <input id="quantity_received" name="quantity_received" type="number" min="1" placeholder="Enter quantity received" required />
-                </div>
-                <button class="employee-btn" type="submit">Add Inventory</button>
-            </form>
-            <div class="invoice-note">
-                When an employee receives an invoice shipment, this adds new stock into inventory. Because both the employee and customer pages use the same shared book list, the updated count appears in both views.
+                    <input
+                        type="number"
+                        id="quantity_received"
+                        name="quantity_received"
+                        min="1"
+                        placeholder="Enter quantity received"
+                        required
+                    />
+
+                    <button class="submit-button" type="submit">Update Inventory</button>
+                </form>
             </div>
         </div>
     </div>

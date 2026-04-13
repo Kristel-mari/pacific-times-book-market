@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Complete</title>
+</head>
+<body>
+
+<h1>Order Complete</h1>
+
+<p>Thank you, {{ customer_name }}!</p>
+
+<p><strong>Order Number:</strong> {{ order_number }}</p>
+
+<h3>Items Purchased:</h3>
+
+<ul>
+{% for item in cart_items %}
+    <li>
+        {{ item.title }} - Qty: {{ item.quantity }} - ${{ item.subtotal }}
+    </li>
+{% endfor %}
+</ul>
+
+<h3>Total Paid: ${{ cart_total }}</h3>
+
+<br>
+
+<a href="{{ url_for('home') }}">Return to Store</a>
+
+</body>
+</html>

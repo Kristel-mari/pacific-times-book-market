@@ -1,0 +1,68 @@
+[
+    {
+        "order_number": "ORD-20260411150235",
+        "customer_name": "Kristel",
+        "employee_name": "Kristel",
+        "items": [
+            {
+                "title": "The Silent Library",
+                "price": 18.99,
+                "quantity": 6,
+                "subtotal": 113.94
+            },
+            {
+                "title": "Hidden Chapters",
+                "price": 17.75,
+                "quantity": 1,
+                "subtotal": 17.75
+            }
+        ],
+        "total_price": 131.69,
+        "sale_date": "2026-04-11 15:02:35"
+    },
+    {
+        "order_number": "ORD-20260411152117",
+        "customer_name": "kristel",
+        "employee_name": "Kristel",
+        "items": [
+            {
+                "title": "The Silent Library",
+                "price": 18.99,
+                "quantity": 1,
+                "subtotal": 18.99
+            }
+        ],
+        "total_price": 18.99,
+        "sale_date": "2026-04-11 15:21:17"
+    },
+    {
+        "order_number": "ORD-20260411153036",
+        "customer_name": "Guest Customer",
+        "employee_name": "Kristel",
+        "items": [
+            {
+                "title": "Wildflower Letters",
+                "price": 14.99,
+                "quantity": 1,
+                "subtotal": 14.99
+            }
+        ],
+        "total_price": 14.99,
+        "sale_date": "2026-04-11 15:30:36"
+    },
+    {
+        "order_number": "ORD-20260412211933",
+        "customer_name": "Guest Customer",
+        "employee_name": "Kristel",
+        "items": [
+            {
+                "title": "The Silent Library",
+                "price": 18.99,
+                "quantity": 1,
+                "subtotal": 18.99
+            }
+        ],
+        "total_price": 18.99,
+        "sale_date": "2026-04-12 21:19:33"
+    }
+]

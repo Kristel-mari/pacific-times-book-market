@@ -1,560 +1,522 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pacific Times Book Market</title>
     <style>
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
         }
 
         body {
-            background: #f4f4f4;
-            color: #111111;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f3f5;
+            color: #111;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .topbar {
-            background: #111111;
+        .top-nav {
+            background: #050505;
             color: white;
-            padding: 14px 40px;
+            padding: 16px 26px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 1px;
+        .brand {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
         }
 
         .nav-links {
             display: flex;
-            gap: 18px;
-            font-size: 15px;
             align-items: center;
+            gap: 16px;
             flex-wrap: wrap;
         }
 
-        .employee-link {
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-btn {
             background: white;
-            color: #111111;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            border: 1px solid #111111;
+            color: #111 !important;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
         }
 
-        .hero {
+        .cart-pill {
+            border: 2px solid white;
+            color: white !important;
+            padding: 10px 18px;
+            border-radius: 14px;
+            font-weight: 700;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .hero-section {
+            padding: 34px 36px 26px;
+        }
+
+        .hero-grid {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: 1.2fr 0.9fr;
+            gap: 26px;
             align-items: center;
-            gap: 30px;
-            padding: 60px 50px;
-            background: linear-gradient(135deg, #dddddd, #ffffff);
+            min-height: 480px;
         }
 
-        .hero-text h1 {
-            font-size: 52px;
-            line-height: 1.1;
-            margin-bottom: 18px;
-            color: #111111;
+        .hero-copy h1 {
+            margin: 0 0 24px;
+            font-size: 72px;
+            line-height: 1.02;
+            font-weight: 700;
+            letter-spacing: -1.5px;
+            max-width: 660px;
         }
 
-        .hero-text p {
-            font-size: 18px;
-            color: #444444;
-            max-width: 520px;
-            margin-bottom: 24px;
+        .hero-copy p {
+            margin: 0 0 28px;
+            font-size: 26px;
+            color: #4a4a4a;
+            max-width: 780px;
+            line-height: 1.28;
         }
 
-        .hero-buttons {
+        .hero-actions {
             display: flex;
-            gap: 14px;
+            gap: 18px;
             flex-wrap: wrap;
         }
 
-        .btn {
-            padding: 14px 22px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
+        .hero-primary,
+        .hero-secondary {
+            padding: 18px 30px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: 700;
+            display: inline-block;
         }
 
-        .btn-primary {
-            background: #111111;
+        .hero-primary {
+            background: #050505;
             color: white;
         }
 
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid #111111;
-            color: #111111;
+        .hero-secondary {
+            background: white;
+            color: #111;
+            border: 2px solid #1c1c1c;
         }
 
-        .hero-image {
+        .hero-image-wrap {
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .hero-image img {
+        .hero-image {
             width: 100%;
-            max-width: 430px;
-            border-radius: 18px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+            max-width: 640px;
+            height: 440px;
+            object-fit: cover;
+            border-radius: 28px;
+            display: block;
         }
 
-        .section {
-            padding: 55px 50px;
+        .catalog-section,
+        .cart-section {
+            padding: 18px 36px 50px;
         }
 
         .section-title {
-            font-size: 32px;
-            color: #111111;
-            margin-bottom: 10px;
+            font-size: 40px;
+            margin: 0 0 10px;
         }
 
         .section-subtitle {
-            color: #555555;
-            margin-bottom: 28px;
+            margin: 0 0 26px;
+            font-size: 18px;
+            color: #5a5a5a;
         }
 
-        .categories {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-        }
-
-        .category-card {
-            background: white;
-            border-radius: 14px;
-            padding: 24px;
-            text-align: center;
-            box-shadow: 0 5px 16px rgba(0,0,0,0.07);
-            font-weight: bold;
-            color: #222222;
-        }
-
-        .search-box {
+        .filter-bar {
             background: white;
             border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 5px 16px rgba(0,0,0,0.07);
-            margin-bottom: 30px;
-        }
-
-        .search-form {
+            padding: 18px;
+            margin-bottom: 24px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: 1fr 1fr 1fr auto;
             gap: 14px;
+            align-items: end;
         }
 
-        .search-form input,
-        .search-form select {
-            padding: 12px 14px;
-            border: 1px solid #cfcfcf;
-            border-radius: 8px;
-            font-size: 15px;
+        .filter-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111;
+        }
+
+        .filter-group input,
+        .filter-group select {
             width: 100%;
-        }
-
-        .search-results-note {
-            margin-top: 16px;
-            color: #555555;
+            padding: 14px 14px;
+            border-radius: 12px;
+            border: 1px solid #d6d6d6;
             font-size: 15px;
+            background: #fff;
         }
 
-        .books-grid {
+        .filter-btn {
+            background: #050505;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 22px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .book-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 20px;
         }
 
         .book-card {
             background: white;
-            border-radius: 14px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 5px 16px rgba(0,0,0,0.07);
-            transition: transform 0.2s ease;
-        }
-
-        .book-card:hover {
-            transform: translateY(-4px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
         }
 
         .book-card img {
             width: 100%;
-            height: 280px;
+            height: 260px;
             object-fit: cover;
-        }
-
-        .book-info {
-            padding: 18px;
-        }
-
-        .book-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #111111;
-        }
-
-        .book-author,
-        .book-category,
-        .inventory {
-            color: #555555;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .inventory strong {
-            color: #111111;
-        }
-
-        .inventory.low-stock {
-            color: #a14b2b;
-            font-weight: bold;
-        }
-
-        .inventory.out-stock {
-            color: #9b1c1c;
-            font-weight: bold;
-        }
-
-        .book-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-            gap: 12px;
-        }
-
-        .price {
-            font-weight: bold;
-            color: #111111;
-        }
-
-        .cart-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .cart-toggle {
-            background: #111111;
-            color: white;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            border: 1px solid white;
-            cursor: pointer;
-        }
-
-        .cart-panel {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 42px;
-            width: 360px;
-            background: white;
-            color: #111111;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
-            padding: 18px;
-            z-index: 1000;
-        }
-
-        .cart-panel.open {
             display: block;
         }
 
-        .cart-panel-title {
+        .book-card-content {
+            padding: 18px;
+        }
+
+        .book-card h3 {
+            margin: 0 0 8px;
+            font-size: 22px;
+            line-height: 1.2;
+        }
+
+        .book-meta {
+            margin: 0 0 6px;
+            color: #505050;
+            font-size: 15px;
+        }
+
+        .book-price {
+            margin: 10px 0 14px;
             font-size: 20px;
-            font-weight: bold;
-            color: #111111;
-            margin-bottom: 14px;
+            font-weight: 700;
         }
 
-        .cart-mini-row {
-            display: grid;
-            grid-template-columns: 1.6fr .8fr .8fr;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid #e8e8e8;
-            align-items: center;
-            font-size: 14px;
+        .add-cart-btn {
+            width: 100%;
+            border: none;
+            background: #050505;
+            color: white;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
         }
 
-        .cart-mini-header {
-            font-weight: bold;
-            color: #111111;
+        .add-cart-btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
         }
 
-        .cart-mini-total {
-            margin-top: 14px;
+        .cart-card,
+        .empty-message {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            text-align: left;
+            padding: 14px 8px;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 16px;
+        }
+
+        .cart-total {
             text-align: right;
-            font-weight: bold;
-            color: #111111;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 16px 0 20px;
         }
 
-        .cart-mini-actions {
-            margin-top: 14px;
+        .cart-buttons {
             display: flex;
+            gap: 14px;
             justify-content: flex-end;
-            gap: 10px;
             flex-wrap: wrap;
         }
 
-        .buy-form {
+        .cart-buttons form {
             margin: 0;
         }
 
-        .empty-cart {
-            color: #555555;
-            padding-top: 8px;
+        .clear-btn,
+        .checkout-btn {
+            border-radius: 14px;
+            padding: 14px 22px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            min-width: 120px;
         }
 
-        .newsletter {
-            background: #111111;
-            color: white;
-            border-radius: 20px;
-            padding: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
+        .clear-btn {
+            background: white;
+            border: 2px solid #1b1b1b;
+            color: #111;
         }
 
-        .newsletter h3 {
-            font-size: 28px;
-            margin-bottom: 10px;
-        }
-
-        .newsletter p {
-            color: #d9d9d9;
-        }
-
-        .newsletter form {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .newsletter input {
-            padding: 14px 16px;
-            min-width: 280px;
+        .checkout-btn {
+            background: #050505;
             border: none;
-            border-radius: 8px;
+            color: white;
         }
 
-        footer {
-            padding: 30px 50px 45px;
-            color: #555555;
-            text-align: center;
+        .checkout-btn:hover {
+            background: #1b1b1b;
         }
 
-        @media (max-width: 980px) {
-            .hero,
-            .categories,
-            .search-form,
-            .books-grid {
-                grid-template-columns: 1fr 1fr;
+        @media (max-width: 1200px) {
+            .hero-copy h1 {
+                font-size: 58px;
+            }
+
+            .hero-copy p {
+                font-size: 22px;
+            }
+
+            .hero-grid {
+                grid-template-columns: 1fr;
             }
         }
 
-        @media (max-width: 700px) {
-            .topbar,
-            .hero,
-            .newsletter {
-                flex-direction: column;
-                display: flex;
-                text-align: center;
-            }
-
-            .nav-links {
-                justify-content: center;
-            }
-
-            .hero {
-                padding: 40px 24px;
-            }
-
-            .section {
-                padding: 40px 24px;
-            }
-
-            .categories,
-            .search-form,
-            .books-grid {
+        @media (max-width: 860px) {
+            .filter-bar {
                 grid-template-columns: 1fr;
             }
 
-            .cart-panel {
-                width: 300px;
+            .brand {
+                font-size: 24px;
+            }
+
+            .hero-section,
+            .catalog-section,
+            .cart-section {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .hero-copy h1 {
+                font-size: 44px;
+                max-width: 100%;
+            }
+
+            .hero-copy p {
+                font-size: 18px;
+            }
+
+            .hero-primary,
+            .hero-secondary {
+                font-size: 17px;
+                padding: 14px 22px;
+            }
+
+            .top-nav {
+                padding: 16px 18px;
+            }
+
+            .cart-buttons {
+                justify-content: stretch;
+            }
+
+            .cart-buttons form {
+                width: 100%;
+            }
+
+            .clear-btn,
+            .checkout-btn {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <header class="topbar">
-        <div class="logo">Pacific Times Book Market</div>
+    <header class="top-nav">
+        <div class="brand">Pacific Times Book Market</div>
+
         <nav class="nav-links">
-            <a href="#">Home</a>
-            <a href="#search">Search</a>
-            <a href="#">Categories</a>
-            <a href="#">Contact</a>
-            <a class="employee-link" href="/customer-signin">Customer Sign In</a>
-            <a class="employee-link" href="/employee-signin">Employee Sign In</a>
-            <div class="cart-dropdown">
-                <button class="cart-toggle" type="button" onclick="toggleCart()">Cart ({{ cart_count }})</button>
-                <div class="cart-panel" id="cartPanel">
-                    <div class="cart-panel-title">Shopping Cart</div>
-                    {% if cart_items %}
-                        <div class="cart-mini-row cart-mini-header">
-                            <div>Book</div>
-                            <div>Qty</div>
-                            <div>Subtotal</div>
-                        </div>
-                        {% for item in cart_items %}
-                        <div class="cart-mini-row">
-                            <div>{{ item.title }}</div>
-                            <div>{{ item.quantity }}</div>
-                            <div>${{ '%.2f'|format(item.subtotal) }}</div>
-                        </div>
-                        {% endfor %}
-                        <div class="cart-mini-total">Total: ${{ '%.2f'|format(cart_total) }}</div>
-                        <div class="cart-mini-actions">
-                            <form method="POST" action="/clear-cart">
-                                <button class="btn btn-secondary" type="submit">Clear</button>
-                            </form>
-                            <button class="btn btn-primary" type="button">Checkout</button>
-                        </div>
-                    {% else %}
-                        <div class="empty-cart">Your cart is empty.</div>
-                    {% endif %}
-                </div>
-            </div>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#catalog">Search</a>
+            <a href="#catalog">Categories</a>
+            <a href="#catalog">Contact</a>
+            <a class="nav-btn" href="{{ url_for('customer_signin') }}">Customer Sign In</a>
+            <a class="nav-btn" href="{{ url_for('employee_signin') }}">Employee Sign In</a>
+            <a class="cart-pill" href="#cart-section">Cart ({{ cart_count }})</a>
         </nav>
     </header>
 
-    <section class="hero">
-        <div class="hero-text">
-            <h1>Discover your next favorite book</h1>
-            <p>Browse trending titles, timeless classics, and search live inventory by title, author, or category.</p>
-            <div class="hero-buttons">
-                <button class="btn btn-primary">Shop Now</button>
-                <button class="btn btn-secondary">View Collection</button>
+    <section class="hero-section">
+        <div class="hero-grid">
+            <div class="hero-copy">
+                <h1>Discover your next favorite book</h1>
+                <p>Browse trending titles, timeless classics, and search live inventory by title, author, or category.</p>
+
+                <div class="hero-actions">
+                    <a class="hero-primary" href="#catalog">Shop Now</a>
+                    <a class="hero-secondary" href="#catalog">View Collection</a>
+                </div>
+            </div>
+
+            <div class="hero-image-wrap">
+                <img
+                    class="hero-image"
+                    src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80"
+                    alt="Books stacked on shelves"
+                >
             </div>
         </div>
-        <div class="hero-image">
-            <img src="https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80" alt="Books">
-        </div>
     </section>
 
-    <section class="section">
+    <section class="catalog-section" id="catalog">
         <h2 class="section-title">Browse Categories</h2>
         <p class="section-subtitle">Find books by the genres you love most.</p>
-        <div class="categories">
-            <div class="category-card">Fiction</div>
-            <div class="category-card">Romance</div>
-            <div class="category-card">Mystery</div>
-            <div class="category-card">Non-Fiction</div>
-        </div>
-    </section>
 
-    <section class="section" id="search">
-        <h2 class="section-title">Search Our Inventory</h2>
-        <p class="section-subtitle">Search by title, author, and category to see what is currently in stock.</p>
+        <form class="filter-bar" method="GET" action="{{ url_for('home') }}">
+            <div class="filter-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" value="{{ title_query }}" placeholder="Search by title">
+            </div>
 
-        <div class="search-box">
-            <form class="search-form" method="GET" action="/">
-                <input type="text" name="title" placeholder="Search by title" value="{{ title_query }}">
-                <input type="text" name="author" placeholder="Search by author" value="{{ author_query }}">
-                <select name="category">
-                    <option value="">All categories</option>
+            <div class="filter-group">
+                <label for="author">Author</label>
+                <input type="text" id="author" name="author" value="{{ author_query }}" placeholder="Search by author">
+            </div>
+
+            <div class="filter-group">
+                <label for="category">Category</label>
+                <select id="category" name="category">
+                    <option value="">All Categories</option>
                     {% for category in categories %}
                         <option value="{{ category }}" {% if category == category_query %}selected{% endif %}>{{ category }}</option>
                     {% endfor %}
                 </select>
-                <button class="btn btn-primary" type="submit">Search</button>
-            </form>
-            <div class="search-results-note">Showing <strong>{{ books|length }}</strong> matching book(s).</div>
-        </div>
-    </section>
+            </div>
 
-    <section class="section" id="inventory">
-        <h2 class="section-title">Available Inventory</h2>
-        <p class="section-subtitle">Current books on hand based on your search.</p>
-        <div class="books-grid">
-            {% for book in books %}
-            <div class="book-card">
-                <img src="{{ book.image }}" alt="{{ book.title }}">
-                <div class="book-info">
-                    <div class="book-title">{{ book.title }}</div>
-                    <div class="book-author">by {{ book.author }}</div>
-                    <div class="book-category">Category: {{ book.category }}</div>
-                    <div class="inventory {% if book.inventory == 0 %}out-stock{% elif book.inventory <= 2 %}low-stock{% endif %}">
-                        <strong>Inventory on hand:</strong> {{ book.inventory }}
-                    </div>
-                    <div class="book-bottom">
-                        <span class="price">${{ '%.2f'|format(book.price) }}</span>
-                        <form class="buy-form" method="POST" action="/add-to-cart/{{ book.id }}">
-                            <button class="btn btn-primary" type="submit" {% if book.inventory == 0 %}disabled{% endif %}>
-                                {% if book.inventory == 0 %}Out of Stock{% else %}Buy{% endif %}
+            <button class="filter-btn" type="submit">Search</button>
+        </form>
+
+        {% if books %}
+            <div class="book-grid">
+                {% for book in books %}
+                <div class="book-card">
+                    <img src="{{ book.image }}" alt="{{ book.title }}">
+
+                    <div class="book-card-content">
+                        <h3>{{ book.title }}</h3>
+                        <p class="book-meta">{{ book.author }}</p>
+                        <p class="book-meta">{{ book.category }}</p>
+                        <p class="book-meta">Inventory: {{ book.inventory }}</p>
+                        <p class="book-price">${{ "%.2f"|format(book.price) }}</p>
+
+                        <form action="{{ url_for('add_to_cart', book_id=book.id) }}" method="POST">
+                            <button class="add-cart-btn" type="submit" {% if book.inventory <= 0 %}disabled{% endif %}>
+                                {% if book.inventory <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
                             </button>
                         </form>
                     </div>
                 </div>
+                {% endfor %}
             </div>
+        {% else %}
+            <div class="empty-message">No books matched your search.</div>
+        {% endif %}
+    </section>
+
+    <section class="cart-section" id="cart-section">
+        <h2 class="section-title">Shopping Cart</h2>
+        <p class="section-subtitle">Review your selected books before checkout.</p>
+
+        <div class="cart-card">
+            {% if cart_items %}
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ "%.2f"|format(item.subtotal) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="cart-total">Total: ${{ "%.2f"|format(cart_total) }}</div>
+
+                <div class="cart-buttons">
+                    <form method="POST" action="{{ url_for('clear_cart') }}">
+                        <button class="clear-btn" type="submit">Clear</button>
+                    </form>
+
+                    <form action="{{ url_for('checkout') }}" method="get">
+                        <button class="checkout-btn" type="submit">Checkout</button>
+                    </form>
+                </div>
             {% else %}
-            <p>No books matched your search.</p>
-            {% endfor %}
+                <p>Your cart is empty.</p>
+            {% endif %}
         </div>
     </section>
-
-    <section class="section">
-        <div class="newsletter">
-            <div>
-                <h3>Join our newsletter</h3>
-                <p>Get updates on new arrivals, sales, and curated recommendations.</p>
-            </div>
-            <form>
-                <input type="email" placeholder="Enter your email" />
-                <button class="btn btn-primary" type="submit">Subscribe</button>
-            </form>
-        </div>
-    </section>
-
-    <footer>
-        <p>© 2026 Pacific Times Book Market. All rights reserved.</p>
-    </footer>
-
-    <script>
-        function toggleCart() {
-            const panel = document.getElementById('cartPanel');
-            panel.classList.toggle('open');
-        }
-
-        document.addEventListener('click', function(event) {
-            const dropdown = document.querySelector('.cart-dropdown');
-            if (dropdown && !dropdown.contains(event.target)) {
-                const panel = document.getElementById('cartPanel');
-                if (panel) {
-                    panel.classList.remove('open');
-                }
-            }
-        });
-    </script>
 </body>
 </html>
