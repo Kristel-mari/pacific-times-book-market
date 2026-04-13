@@ -10,6 +10,7 @@ app.secret_key = "pacific_times_secret_key"
 DATA_FILE = "books.json"
 BACKUP_FOLDER = "backups"
 LOG_FILE = "login_activity.txt"
+SALES_LOG_FILE = "sales_log.json"
 
 users_db = {
     "Kristel": "password",
@@ -83,6 +84,12 @@ def ensure_data_file():
             json.dump(DEFAULT_BOOKS, f, indent=4)
 
 
+def ensure_sales_log_file():
+    if not os.path.exists(SALES_LOG_FILE):
+        with open(SALES_LOG_FILE, "w", encoding="utf-8") as f:
+            json.dump([], f, indent=4)
+
+
 def load_books():
     ensure_data_file()
     with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -92,6 +99,58 @@ def load_books():
 def save_books(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
+
+
+def load_sales_log():
+    ensure_sales_log_file()
+    with open(SALES_LOG_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def get_sale_book_titles(sale):
+    return [item.get("title", "") for item in sale.get("items", [])]
+
+
+def get_sale_authors_from_titles(sale, books):
+    title_to_author = {book["title"]: book["author"] for book in books}
+    authors = []
+
+    for item in sale.get("items", []):
+        title = item.get("title", "")
+        author = title_to_author.get(title, "")
+        if author:
+            authors.append(author)
+
+    return authors
+
+def save_sales_log(data):
+    with open(SALES_LOG_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
+def add_sale_record(customer_name, items, total_price, employee_name="System"):
+    sales = load_sales_log()
+
+    order_number = f"ORD-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    sale_entry = {
+        "order_number": order_number,
+        "customer_name": customer_name,
+        "employee_name": employee_name,
+        "items": items,
+        "total_price": round(total_price, 2),
+        "sale_date": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    sales.append(sale_entry)
+    save_sales_log(sales)
+
+    return order_number
+
+
+def get_sales_summary():
+    sales = load_sales_log()
+    total_orders = len(sales)
+    total_revenue = round(sum(sale.get("total_price", 0) for sale in sales), 2)
+    return total_orders, total_revenue
 
 
 def backup_books():
@@ -153,6 +212,7 @@ def build_cart_data():
             quantity = cart[book_id]
             subtotal = quantity * book["price"]
             cart_items.append({
+                "id": book["id"],
                 "title": book["title"],
                 "price": book["price"],
                 "quantity": quantity,
@@ -226,6 +286,53 @@ def clear_cart():
     return redirect(url_for("home"))
 
 
+
+@app.route("/checkout", methods=["GET", "POST"])
+def checkout():
+    cart_items, cart_total, cart_count = build_cart_data()
+
+    if request.method == "POST":
+        customer_name = request.form.get("customer_name", "").strip()
+        if not customer_name:
+            customer_name = "Guest Customer"
+
+        if not cart_items:
+            return redirect(url_for("home"))
+
+        sale_items = []
+        for item in cart_items:
+            sale_items.append({
+                "title": item["title"],
+                "price": item["price"],
+                "quantity": item["quantity"],
+                "subtotal": round(item["subtotal"], 2),
+            })
+
+        order_number = add_sale_record(
+            customer_name=customer_name,
+            items=sale_items,
+            total_price=cart_total,
+            employee_name=session.get("employee_name", "System")
+        )
+
+        session["cart"] = {}
+
+        return render_template(
+            "checkout_success.html",
+            customer_name=customer_name,
+            order_number=order_number,
+            cart_items=sale_items,
+            cart_total=round(cart_total, 2)
+        )
+
+    return render_template(
+        "checkout.html",
+        cart_items=cart_items,
+        cart_total=round(cart_total, 2),
+        cart_count=cart_count
+    )
+
+
 @app.route("/customer-signin", methods=["GET"])
 def customer_signin():
     return render_template("customer_signin.html")
@@ -269,11 +376,15 @@ def login():
 def employee_dashboard():
     employee_name = session.get("employee_name", "Store Employee")
     books = get_books()
+    total_orders, total_revenue = get_sales_summary()
+
     return render_template(
         "employee_dashboard.html",
         employee_name=employee_name,
         books=books,
         restock_message="",
+        total_orders=total_orders,
+        total_revenue=total_revenue,
     )
 
 
@@ -308,11 +419,131 @@ def employee_restock():
     else:
         restock_message = "Inventory update could not be completed. Please enter a valid quantity."
 
+    total_orders, total_revenue = get_sales_summary()
+
     return render_template(
         "employee_dashboard.html",
         employee_name=employee_name if employee_name else session.get("employee_name", "Store Employee"),
         books=get_books(),
         restock_message=restock_message,
+        total_orders=total_orders,
+        total_revenue=total_revenue,
+    )
+
+
+@app.route("/employee-sales-log", methods=["GET"])
+def employee_sales_log():
+    employee_name = session.get("employee_name", "Store Employee")
+    sales = load_sales_log()
+    books = get_books()
+
+    start_date = request.args.get("start_date", "").strip()
+    end_date = request.args.get("end_date", "").strip()
+    book_query = request.args.get("book", "").strip().lower()
+    author_query = request.args.get("author", "").strip().lower()
+
+    filtered_sales = []
+
+    for sale in sales:
+        sale_date_str = sale.get("sale_date", "")
+        sale_date_only = sale_date_str[:10]  # YYYY-MM-DD
+
+        matches_start = sale_date_only >= start_date if start_date else True
+        matches_end = sale_date_only <= end_date if end_date else True
+
+        sale_titles = get_sale_book_titles(sale)
+        sale_authors = get_sale_authors_from_titles(sale, books)
+
+        matches_book = any(book_query in title.lower() for title in sale_titles) if book_query else True
+        matches_author = any(author_query in author.lower() for author in sale_authors) if author_query else True
+
+        if matches_start and matches_end and matches_book and matches_author:
+            sale_copy = sale.copy()
+            enriched_items = []
+
+            title_to_author = {book["title"]: book["author"] for book in books}
+
+            for item in sale.get("items", []):
+                enriched_item = item.copy()
+                enriched_item["author"] = title_to_author.get(item.get("title", ""), "Unknown Author")
+                enriched_items.append(enriched_item)
+
+            sale_copy["items"] = enriched_items
+            filtered_sales.append(sale_copy)
+
+    filtered_sales = sorted(filtered_sales, key=lambda x: x["sale_date"], reverse=True)
+
+    total_orders = len(filtered_sales)
+    total_revenue = round(sum(sale.get("total_price", 0) for sale in filtered_sales), 2)
+
+    return render_template(
+    "employee_sales_log.html",
+    employee_name=employee_name,
+    sales=filtered_sales,
+    books=books,
+    total_orders=total_orders,
+    total_revenue=total_revenue,
+    start_date=start_date,
+    end_date=end_date,
+    book_query=book_query,
+    author_query=author_query,
+)
+
+
+@app.route("/employee-add-sale", methods=["GET", "POST"])
+def employee_add_sale():
+    employee_name = session.get("employee_name", "Store Employee")
+    books = get_books()
+
+    if request.method == "POST":
+        customer_name = request.form.get("customer_name", "").strip()
+        book_id = request.form.get("book_id", "").strip()
+        quantity = request.form.get("quantity", "1").strip()
+
+        try:
+            book_id_int = int(book_id)
+            quantity_int = int(quantity)
+        except ValueError:
+            book_id_int = None
+            quantity_int = 0
+
+        selected_book = next((book for book in books if book["id"] == book_id_int), None)
+
+        if not customer_name:
+            customer_name = "Walk-In Customer"
+
+        if selected_book and quantity_int > 0 and selected_book["inventory"] >= quantity_int:
+            selected_book["inventory"] -= quantity_int
+            save_and_backup_books(books)
+
+            sale_items = [{
+                "title": selected_book["title"],
+                "price": selected_book["price"],
+                "quantity": quantity_int,
+                "subtotal": round(selected_book["price"] * quantity_int, 2),
+            }]
+
+            add_sale_record(
+                customer_name=customer_name,
+                items=sale_items,
+                total_price=selected_book["price"] * quantity_int,
+                employee_name=employee_name
+            )
+
+            return redirect(url_for("employee_sales_log"))
+
+        return render_template(
+            "employee_add_sale.html",
+            employee_name=employee_name,
+            books=books,
+            error_message="Could not complete sale. Check quantity and inventory."
+        )
+
+    return render_template(
+        "employee_add_sale.html",
+        employee_name=employee_name,
+        books=books,
+        error_message=""
     )
 
 
@@ -320,16 +551,20 @@ def employee_restock():
 def restore_backup():
     employee_name = request.form.get("employee_name", "").strip()
     success, message = restore_latest_backup()
+    total_orders, total_revenue = get_sales_summary()
 
     return render_template(
         "employee_dashboard.html",
         employee_name=employee_name if employee_name else session.get("employee_name", "Store Employee"),
         books=get_books(),
         restock_message=message,
+        total_orders=total_orders,
+        total_revenue=total_revenue,
     )
 
 
 if __name__ == "__main__":
     ensure_data_file()
+    ensure_sales_log_file()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

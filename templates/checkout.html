@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f3f5;
+            margin: 0;
+            padding: 30px;
+            color: #111;
+        }
+
+        .page-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .checkout-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 36px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 8px;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 16px;
+        }
+
+        .total {
+            text-align: right;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 16px 0 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d6d6d6;
+            border-radius: 12px;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .back-btn,
+        .purchase-btn {
+            padding: 14px 22px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-btn {
+            background: white;
+            border: 2px solid #1b1b1b;
+            color: #111;
+        }
+
+        .purchase-btn {
+            background: #050505;
+            border: none;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <div class="checkout-card">
+            <h1>Checkout</h1>
+
+            {% if cart_items %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.title }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>${{ "%.2f"|format(item.subtotal) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="total">Total: ${{ "%.2f"|format(cart_total) }}</div>
+
+                <form method="POST" action="{{ url_for('checkout') }}">
+                    <label for="customer_name">Customer Name</label>
+                    <input
+                        type="text"
+                        id="customer_name"
+                        name="customer_name"
+                        placeholder="Enter customer name or leave blank"
+                    >
+
+                    <div class="button-row">
+                        <a class="back-btn" href="{{ url_for('home') }}">Back to Store</a>
+                        <button class="purchase-btn" type="submit">Complete Purchase</button>
+                    </div>
+                </form>
+            {% else %}
+                <p>Your cart is empty.</p>
+                <a class="back-btn" href="{{ url_for('home') }}">Back to Store</a>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

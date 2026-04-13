@@ -5,7 +5,7 @@
         "author": "Ava Hart",
         "category": "Fiction",
         "price": 18.99,
-        "inventory": 8,
+        "inventory": 9,
         "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -50,7 +50,7 @@
         "author": "Nora Blake",
         "category": "Romance",
         "price": 14.99,
-        "inventory": 8,
+        "inventory": 9,
         "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=800&q=80"
     }
 ]
