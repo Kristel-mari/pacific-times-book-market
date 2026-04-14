@@ -11,6 +11,7 @@ DATA_FILE = "books.json"
 BACKUP_FOLDER = "backups"
 LOG_FILE = "login_activity.txt"
 SALES_LOG_FILE = "sales_log.json"
+VENDOR_ORDERS_FILE = "vendor_orders.json"
 
 users_db = {
     "Kristel": "password",
@@ -90,6 +91,12 @@ def ensure_sales_log_file():
             json.dump([], f, indent=4)
 
 
+def ensure_vendor_orders_file():
+    if not os.path.exists(VENDOR_ORDERS_FILE):
+        with open(VENDOR_ORDERS_FILE, "w", encoding="utf-8") as f:
+            json.dump([], f, indent=4)
+
+
 def load_books():
     ensure_data_file()
     with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -106,6 +113,38 @@ def load_sales_log():
     with open(SALES_LOG_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
 
+
+def save_sales_log(data):
+    with open(SALES_LOG_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
+def load_vendor_orders():
+    ensure_vendor_orders_file()
+    with open(VENDOR_ORDERS_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_vendor_orders(data):
+    with open(VENDOR_ORDERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
+def add_vendor_order(vendor_name, book_title, quantity, status="Ordered"):
+    orders = load_vendor_orders()
+
+    new_order = {
+        "vendor_name": vendor_name,
+        "book_title": book_title,
+        "quantity": quantity,
+        "status": status,
+        "order_date": datetime.now().strftime("%Y-%m-%d")
+    }
+
+    orders.append(new_order)
+    save_vendor_orders(orders)
+
+
 def get_sale_book_titles(sale):
     return [item.get("title", "") for item in sale.get("items", [])]
 
@@ -121,10 +160,6 @@ def get_sale_authors_from_titles(sale, books):
             authors.append(author)
 
     return authors
-
-def save_sales_log(data):
-    with open(SALES_LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
 
 
 def add_sale_record(customer_name, items, total_price, employee_name="System"):
@@ -286,7 +321,6 @@ def clear_cart():
     return redirect(url_for("home"))
 
 
-
 @app.route("/checkout", methods=["GET", "POST"])
 def checkout():
     cart_items, cart_total, cart_count = build_cart_data()
@@ -446,7 +480,7 @@ def employee_sales_log():
 
     for sale in sales:
         sale_date_str = sale.get("sale_date", "")
-        sale_date_only = sale_date_str[:10]  # YYYY-MM-DD
+        sale_date_only = sale_date_str[:10]
 
         matches_start = sale_date_only >= start_date if start_date else True
         matches_end = sale_date_only <= end_date if end_date else True
@@ -477,17 +511,17 @@ def employee_sales_log():
     total_revenue = round(sum(sale.get("total_price", 0) for sale in filtered_sales), 2)
 
     return render_template(
-    "employee_sales_log.html",
-    employee_name=employee_name,
-    sales=filtered_sales,
-    books=books,
-    total_orders=total_orders,
-    total_revenue=total_revenue,
-    start_date=start_date,
-    end_date=end_date,
-    book_query=book_query,
-    author_query=author_query,
-)
+        "employee_sales_log.html",
+        employee_name=employee_name,
+        sales=filtered_sales,
+        books=books,
+        total_orders=total_orders,
+        total_revenue=total_revenue,
+        start_date=start_date,
+        end_date=end_date,
+        book_query=book_query,
+        author_query=author_query,
+    )
 
 
 @app.route("/employee-add-sale", methods=["GET", "POST"])
@@ -547,6 +581,61 @@ def employee_add_sale():
     )
 
 
+@app.route("/employee-vendor-order", methods=["GET", "POST"])
+def employee_vendor_order():
+    employee_name = session.get("employee_name", "Store Employee")
+    books = get_books()
+
+    if request.method == "POST":
+        vendor_name = request.form.get("vendor_name", "").strip()
+        book_id = request.form.get("book_id", "").strip()
+        quantity = request.form.get("quantity", "0").strip()
+
+        try:
+            book_id_int = int(book_id)
+            quantity_int = int(quantity)
+        except ValueError:
+            book_id_int = None
+            quantity_int = 0
+
+        selected_book = next((book for book in books if book["id"] == book_id_int), None)
+
+        if vendor_name and selected_book and quantity_int > 0:
+            add_vendor_order(
+                vendor_name=vendor_name,
+                book_title=selected_book["title"],
+                quantity=quantity_int,
+                status="Ordered"
+            )
+            return redirect(url_for("employee_vendor_orders"))
+
+        return render_template(
+            "employee_vendor_order.html",
+            employee_name=employee_name,
+            books=books,
+            error_message="Could not create vendor order. Check all fields."
+        )
+
+    return render_template(
+        "employee_vendor_order.html",
+        employee_name=employee_name,
+        books=books,
+        error_message=""
+    )
+
+
+@app.route("/employee-vendor-orders", methods=["GET"])
+def employee_vendor_orders():
+    employee_name = session.get("employee_name", "Store Employee")
+    orders = load_vendor_orders()
+
+    return render_template(
+        "employee_vendor_orders.html",
+        employee_name=employee_name,
+        orders=orders
+    )
+
+
 @app.route("/restore-backup", methods=["POST"])
 def restore_backup():
     employee_name = request.form.get("employee_name", "").strip()
@@ -566,5 +655,6 @@ def restore_backup():
 if __name__ == "__main__":
     ensure_data_file()
     ensure_sales_log_file()
+    ensure_vendor_orders_file()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

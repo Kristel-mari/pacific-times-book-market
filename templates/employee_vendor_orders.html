@@ -1,0 +1,21 @@
+<h2>Vendor Orders</h2>
+
+<table border="1">
+<tr>
+    <th>Vendor</th>
+    <th>Book</th>
+    <th>Quantity</th>
+    <th>Status</th>
+    <th>Date</th>
+</tr>
+
+{% for order in orders %}
+<tr>
+    <td>{{ order.vendor_name }}</td>
+    <td>{{ order.book_title }}</td>
+    <td>{{ order.quantity }}</td>
+    <td>{{ order.status }}</td>
+    <td>{{ order.order_date }}</td>
+</tr>
+{% endfor %}
+</table>
