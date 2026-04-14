@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Vendor Order</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #eef3fb;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+        }
+
+        button {
+            padding: 10px;
+            width: 100%;
+            background: #2f64e0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Create Vendor Order</h2>
+
+    {% if error_message %}
+        <p class="error">{{ error_message }}</p>
+    {% endif %}
+
+    <form method="POST">
+
+        <label>Vendor Name:</label>
+        <input type="text" name="vendor_name">
+
+        <label>Select Book:</label>
+        <select name="book_id">
+            {% for book in books %}
+                <option value="{{ book["id"] }}">
+                    {{ book["title"] }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Quantity:</label>
+        <input type="number" name="quantity" min="1">
+
+        <button type="submit">Create Order</button>
+
+    </form>
+
+</div>
+
+</body>
+</html>
