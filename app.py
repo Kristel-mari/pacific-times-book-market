@@ -1,7 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, make_response
+from functools import wraps
 import json
 import os
 import shutil
+import csv
+from io import StringIO
 from datetime import datetime
 
 app = Flask(__name__)
@@ -259,6 +262,25 @@ def build_cart_data():
     return cart_items, cart_total, cart_count
 
 
+def login_required(role=None):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if "user_role" not in session:
+                if role == "employee":
+                    return redirect(url_for("employee_signin"))
+                return redirect(url_for("customer_signin"))
+
+            if role and session.get("user_role") != role:
+                if session.get("user_role") == "employee":
+                    return redirect(url_for("employee_dashboard"))
+                return redirect(url_for("home"))
+
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
+
 @app.route("/")
 def home():
     books = get_books()
@@ -292,6 +314,7 @@ def home():
 
 
 @app.route("/add-to-cart/<int:book_id>", methods=["POST"])
+@login_required("customer")
 def add_to_cart(book_id):
     books = get_books()
     cart = session.get("cart", {})
@@ -307,6 +330,7 @@ def add_to_cart(book_id):
 
 
 @app.route("/clear-cart", methods=["POST"])
+@login_required("customer")
 def clear_cart():
     books = get_books()
     cart = session.get("cart", {})
@@ -322,11 +346,12 @@ def clear_cart():
 
 
 @app.route("/checkout", methods=["GET", "POST"])
+@login_required("customer")
 def checkout():
     cart_items, cart_total, cart_count = build_cart_data()
 
     if request.method == "POST":
-        customer_name = request.form.get("customer_name", "").strip()
+        customer_name = session.get("customer_name", "").strip()
         if not customer_name:
             customer_name = "Guest Customer"
 
@@ -367,15 +392,31 @@ def checkout():
     )
 
 
-@app.route("/customer-signin", methods=["GET"])
+@app.route("/customer-signin", methods=["GET", "POST"])
 def customer_signin():
-    return render_template("customer_signin.html")
+    if request.method == "POST":
+        customer_name = request.form.get("customer_name", "").strip()
+        customer_email = request.form.get("customer_email", "").strip()
+
+        if customer_name and customer_email:
+            session["user_role"] = "customer"
+            session["customer_name"] = customer_name
+            session["customer_email"] = customer_email
+            return redirect(url_for("customer_dashboard"))
+
+        return render_template(
+            "customer_signin.html",
+            error_message="Please enter your name and email."
+        )
+
+    return render_template("customer_signin.html", error_message="")
 
 
-@app.route("/customer-dashboard", methods=["POST"])
+@app.route("/customer-dashboard", methods=["GET"])
+@login_required("customer")
 def customer_dashboard():
-    customer_name = request.form.get("customer_name", "").strip()
-    customer_email = request.form.get("customer_email", "").strip()
+    customer_name = session.get("customer_name", "").strip()
+    customer_email = session.get("customer_email", "").strip()
 
     return render_template(
         "customer_dashboard.html",
@@ -386,6 +427,8 @@ def customer_dashboard():
 
 @app.route("/employee-signin", methods=["GET"])
 def employee_signin():
+    if session.get("user_role") == "employee":
+        return redirect(url_for("employee_dashboard"))
     return render_template("employee_signin.html", error_message="")
 
 
@@ -396,6 +439,7 @@ def login():
 
     if username in users_db and users_db[username] == password:
         log_login(username, True)
+        session["user_role"] = "employee"
         session["employee_name"] = username
         return redirect(url_for("employee_dashboard"))
     else:
@@ -407,6 +451,7 @@ def login():
 
 
 @app.route("/employee-dashboard", methods=["GET"])
+@login_required("employee")
 def employee_dashboard():
     employee_name = session.get("employee_name", "Store Employee")
     books = get_books()
@@ -423,6 +468,7 @@ def employee_dashboard():
 
 
 @app.route("/employee-restock", methods=["POST"])
+@login_required("employee")
 def employee_restock():
     books = get_books()
 
@@ -466,6 +512,7 @@ def employee_restock():
 
 
 @app.route("/employee-sales-log", methods=["GET"])
+@login_required("employee")
 def employee_sales_log():
     employee_name = session.get("employee_name", "Store Employee")
     sales = load_sales_log()
@@ -524,7 +571,85 @@ def employee_sales_log():
     )
 
 
+@app.route("/export-sales-report")
+@login_required("employee")
+def export_sales_report():
+    sales = load_sales_log()
+    books = get_books()
+
+    output = StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Order Number",
+        "Sale Date",
+        "Customer Name",
+        "Employee Name",
+        "Book Title",
+        "Author",
+        "Quantity",
+        "Price",
+        "Subtotal"
+    ])
+
+    title_to_author = {book["title"]: book["author"] for book in books}
+
+    for sale in sales:
+        for item in sale.get("items", []):
+            title = item.get("title", "")
+            writer.writerow([
+                sale.get("order_number", ""),
+                sale.get("sale_date", ""),
+                sale.get("customer_name", ""),
+                sale.get("employee_name", ""),
+                title,
+                title_to_author.get(title, "Unknown Author"),
+                item.get("quantity", 0),
+                item.get("price", 0),
+                item.get("subtotal", 0),
+            ])
+
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=sales_report.csv"
+    response.headers["Content-type"] = "text/csv"
+    return response
+
+
+@app.route("/export-inventory-report")
+@login_required("employee")
+def export_inventory_report():
+    books = get_books()
+
+    output = StringIO()
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Book ID",
+        "Title",
+        "Author",
+        "Category",
+        "Price",
+        "Inventory"
+    ])
+
+    for book in books:
+        writer.writerow([
+            book.get("id", ""),
+            book.get("title", ""),
+            book.get("author", ""),
+            book.get("category", ""),
+            book.get("price", 0),
+            book.get("inventory", 0),
+        ])
+
+    response = make_response(output.getvalue())
+    response.headers["Content-Disposition"] = "attachment; filename=inventory_report.csv"
+    response.headers["Content-type"] = "text/csv"
+    return response
+
+
 @app.route("/employee-add-sale", methods=["GET", "POST"])
+@login_required("employee")
 def employee_add_sale():
     employee_name = session.get("employee_name", "Store Employee")
     books = get_books()
@@ -582,6 +707,7 @@ def employee_add_sale():
 
 
 @app.route("/employee-vendor-order", methods=["GET", "POST"])
+@login_required("employee")
 def employee_vendor_order():
     employee_name = session.get("employee_name", "Store Employee")
     books = get_books()
@@ -625,6 +751,7 @@ def employee_vendor_order():
 
 
 @app.route("/employee-vendor-orders", methods=["GET"])
+@login_required("employee")
 def employee_vendor_orders():
     employee_name = session.get("employee_name", "Store Employee")
     orders = load_vendor_orders()
@@ -637,6 +764,7 @@ def employee_vendor_orders():
 
 
 @app.route("/restore-backup", methods=["POST"])
+@login_required("employee")
 def restore_backup():
     employee_name = request.form.get("employee_name", "").strip()
     success, message = restore_latest_backup()
@@ -650,6 +778,12 @@ def restore_backup():
         total_orders=total_orders,
         total_revenue=total_revenue,
     )
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("home"))
 
 
 if __name__ == "__main__":
