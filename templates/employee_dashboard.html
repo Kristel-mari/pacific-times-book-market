@@ -244,7 +244,9 @@
 
             <div class="employee-actions">
                 <a href="/">Return to customer storefront</a>
-
+                <a href="{{ url_for('export_inventory_report') }}">Export Inventory Report (CSV)</a>
+                <a href="{{ url_for('logout') }}">Employee Logout</a>
+                
                 <form method="POST" action="/restore-backup">
                     <input type="hidden" name="employee_name" value="{{ employee_name }}" />
                     <button type="submit">Restore Latest Backup</button>

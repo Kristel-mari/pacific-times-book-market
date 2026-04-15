@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +18,7 @@
             margin: 0 auto;
         }
 
-     .top-storefront-link {
+        .top-storefront-link {
             display: inline-block;
             padding: 10px 16px;
             background: white;
@@ -199,7 +198,6 @@
 <body>
     <div class="page-wrapper">
 
-    
         <a class="top-storefront-link" href="/">← Return to Storefront</a>
 
         <div class="employee-header">
@@ -216,6 +214,15 @@
 
         <div class="panel">
             <h2>Sales Log & Reports</h2>
+
+            <div class="action-row">
+                <a class="primary" href="{{ url_for('export_sales_report') }}">
+                    Export Sales Report (CSV)
+                </a>
+                <button type="button" onclick="window.print()">
+                    Print Report
+                </button>
+            </div>
 
             <div class="summary-row">
                 <div class="summary-card">
@@ -265,4 +272,3 @@
     </div>
 </body>
 </html>
-```

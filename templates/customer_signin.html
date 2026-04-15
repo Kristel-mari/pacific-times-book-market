@@ -87,17 +87,22 @@
     <div class="signin-card">
         <h1>Customer Sign In</h1>
         <p>Sign in to view your customer dashboard and account details.</p>
-        <form class="signin-form" method="POST" action="/customer-dashboard">
-            <div>
-                <label for="customer_name">Customer Name</label>
-                <input id="customer_name" name="customer_name" type="text" placeholder="Enter your name" />
-            </div>
-            <div>
-                <label for="customer_email">Customer Email</label>
-                <input id="customer_email" name="customer_email" type="email" placeholder="Enter your email" />
-            </div>
-            <button class="customer-btn" type="submit">Sign In</button>
-        </form>
+        <form class="signin-form" method="POST" action="/customer-signin">
+
+    {% if error_message %}
+        <p style="color:red; margin-bottom:10px;">{{ error_message }}</p>
+    {% endif %}
+
+    <div>
+        <label for="customer_name">Customer Name</label>
+        <input id="customer_name" name="customer_name" type="text" placeholder="Enter your name" />
+    </div>
+    <div>
+        <label for="customer_email">Customer Email</label>
+        <input id="customer_email" name="customer_email" type="email" placeholder="Enter your email" />
+    </div>
+    <button class="customer-btn" type="submit">Sign In</button>
+</form>
         <a class="back-link" href="/">← Back to customer store</a>
     </div>
 </body>
