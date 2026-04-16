@@ -155,7 +155,8 @@
         }
 
         .catalog-section,
-        .cart-section {
+        .cart-section,
+        .feedback-section {
             padding: 18px 36px 50px;
         }
 
@@ -276,8 +277,16 @@
             font-weight: 700;
         }
 
+        .special-order-text {
+            color: #1d4ed8;
+            font-weight: 700;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
         .cart-card,
-        .empty-message {
+        .empty-message,
+        .feedback-card {
             background: white;
             border-radius: 20px;
             padding: 24px;
@@ -342,6 +351,49 @@
             background: #1b1b1b;
         }
 
+        .feedback-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .feedback-form input,
+        .feedback-form textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #d6d6d6;
+            font-size: 15px;
+            background: #fff;
+        }
+
+        .feedback-submit-btn {
+            background: #050505;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 22px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .feedback-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .feedback-item {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .feedback-item p {
+            margin-top: 8px;
+            color: #555;
+        }
+
         @media (max-width: 1200px) {
             .hero-copy h1 {
                 font-size: 58px;
@@ -368,6 +420,7 @@
             .hero-section,
             .catalog-section,
             .cart-section,
+            .feedback-section,
             .employee-badge-wrap {
                 padding-left: 18px;
                 padding-right: 18px;
@@ -414,20 +467,20 @@
         <div class="brand">Pacific Times Book Market</div>
 
         <nav class="nav-links">
-    <a href="{{ url_for('home') }}">Home</a>
-    <a href="#catalog">Search</a>
-    <a href="#catalog">Categories</a>
-    <a href="#catalog">Contact</a>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="#catalog">Search</a>
+            <a href="#catalog">Categories</a>
+            <a href="#feedback">Feedback</a>
 
-    {% if is_employee %}
-        <a class="nav-btn" href="{{ url_for('employee_dashboard') }}">Employee Dashboard</a>
-        <a class="nav-btn" href="{{ url_for('logout') }}">Employee Logout</a>
-    {% else %}
-        <a class="nav-btn" href="{{ url_for('customer_signin') }}">Customer Sign In</a>
-        <a class="nav-btn" href="{{ url_for('employee_signin') }}">Employee Sign In</a>
-        <a class="cart-pill" href="#cart-section">Cart ({{ cart_count }})</a>
-    {% endif %}
-</nav>
+            {% if is_employee %}
+                <a class="nav-btn" href="{{ url_for('employee_dashboard') }}">Employee Dashboard</a>
+                <a class="nav-btn" href="{{ url_for('logout') }}">Employee Logout</a>
+            {% else %}
+                <a class="nav-btn" href="{{ url_for('customer_signin') }}">Customer Sign In</a>
+                <a class="nav-btn" href="{{ url_for('employee_signin') }}">Employee Sign In</a>
+                <a class="cart-pill" href="#cart-section">Cart ({{ cart_count }})</a>
+            {% endif %}
+        </nav>
     </header>
 
     {% if is_employee %}
@@ -500,13 +553,26 @@
                         <p class="book-price">${{ "%.2f"|format(book.price) }}</p>
 
                         {% if not is_employee %}
-                        <form action="{{ url_for('add_to_cart', book_id=book.id) }}" method="POST">
-                            <button class="add-cart-btn" type="submit" {% if book.inventory <= 0 %}disabled{% endif %}>
-                                {% if book.inventory <= 0 %}Out of Stock{% else %}Add to Cart{% endif %}
+                            {% if book.inventory > 0 %}
+                            <form action="{{ url_for('add_to_cart', book_id=book.id) }}" method="POST">
+                                <button class="add-cart-btn" type="submit">
+                                    Add to Cart
+                                </button>
+                            </form>
+
+                            {% elif book.get('special_order') %}
+                            <button class="add-cart-btn" type="button" disabled>
+                                Special Order Required
                             </button>
-                        </form>
+                            <p class="special-order-text">This title must be special ordered</p>
+
+                            {% else %}
+                            <button class="add-cart-btn" type="button" disabled>
+                                Out of Stock
+                            </button>
+                            {% endif %}
                         {% else %}
-                        <p class="employee-mode-text">Employee mode</p>
+                            <p class="employee-mode-text">Employee mode</p>
                         {% endif %}
                     </div>
                 </div>
@@ -560,5 +626,63 @@
         </div>
     </section>
     {% endif %}
+
+    <section class="feedback-section" id="feedback">
+        <h2 class="section-title">Customer Feedback</h2>
+        <p class="section-subtitle">See what others are saying and share your thoughts.</p>
+
+        <div class="feedback-card">
+            <form class="feedback-form" method="POST" action="{{ url_for('submit_feedback') }}">
+                <input type="text" name="name" placeholder="Your name (optional)">
+                <textarea name="message" placeholder="Write your feedback..." rows="4" required></textarea>
+                <button class="feedback-submit-btn" type="submit">Submit Feedback</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="feedback-section">
+        <h2 class="section-title">What Our Customers Say</h2>
+
+        {% if feedback %}
+            <div class="feedback-list">
+                {% for item in feedback %}
+                    <div class="feedback-item">
+                        <strong>{{ item.name }}</strong>
+                        <p>{{ item.message }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-message">No feedback yet. Be the first to share your thoughts!</div>
+        {% endif %}
+    </section>
+
+    <section class="feedback-section">
+        <h2 class="section-title">How We Respond to Feedback</h2>
+        <p class="section-subtitle">We value our customers and take action on every suggestion.</p>
+
+        <div class="feedback-list">
+            <div class="feedback-item">
+                <strong>Customer Feedback:</strong>
+                <p>"I wish there were more mystery books available."</p>
+                <strong style="display:block; margin-top:10px;">Action Taken:</strong>
+                <p style="color: #1d4ed8;">Added 5 new mystery titles to our inventory this month.</p>
+            </div>
+
+            <div class="feedback-item">
+                <strong>Customer Feedback:</strong>
+                <p>"Checkout process could be faster."</p>
+                <strong style="display:block; margin-top:10px;">Action Taken:</strong>
+                <p style="color: #1d4ed8;">Simplified cart layout and reduced checkout steps.</p>
+            </div>
+
+            <div class="feedback-item">
+                <strong>Customer Feedback:</strong>
+                <p>"It would be nice to see low stock warnings."</p>
+                <strong style="display:block; margin-top:10px;">Action Taken:</strong>
+                <p style="color: #1d4ed8;">Added inventory alerts to highlight low and out-of-stock books.</p>
+            </div>
+        </div>
+    </section>
 </body>
 </html>

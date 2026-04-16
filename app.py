@@ -15,6 +15,7 @@ BACKUP_FOLDER = "backups"
 LOG_FILE = "login_activity.txt"
 SALES_LOG_FILE = "sales_log.json"
 VENDOR_ORDERS_FILE = "vendor_orders.json"
+FEEDBACK_FILE = "feedback.json"
 
 users_db = {
     "Kristel": "password",
@@ -32,6 +33,7 @@ DEFAULT_BOOKS = [
         "category": "Fiction",
         "price": 18.99,
         "inventory": 12,
+        "special_order": False,
         "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -41,6 +43,7 @@ DEFAULT_BOOKS = [
         "category": "Romance",
         "price": 15.49,
         "inventory": 7,
+        "special_order": True,
         "image": "https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -50,6 +53,7 @@ DEFAULT_BOOKS = [
         "category": "Mystery",
         "price": 21.00,
         "inventory": 4,
+        "special_order": False,
         "image": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -59,6 +63,7 @@ DEFAULT_BOOKS = [
         "category": "Non-Fiction",
         "price": 17.75,
         "inventory": 10,
+        "special_order": True,
         "image": "https://images.unsplash.com/photo-1524578271613-d550eacf6090?auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -68,6 +73,7 @@ DEFAULT_BOOKS = [
         "category": "Mystery",
         "price": 19.25,
         "inventory": 5,
+        "special_order": False,
         "image": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=800&q=80"
     },
     {
@@ -77,8 +83,9 @@ DEFAULT_BOOKS = [
         "category": "Romance",
         "price": 14.99,
         "inventory": 9,
+        "special_order": False,
         "image": "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=800&q=80"
-    },
+    }
 ]
 
 
@@ -97,6 +104,12 @@ def ensure_sales_log_file():
 def ensure_vendor_orders_file():
     if not os.path.exists(VENDOR_ORDERS_FILE):
         with open(VENDOR_ORDERS_FILE, "w", encoding="utf-8") as f:
+            json.dump([], f, indent=4)
+
+
+def ensure_feedback_file():
+    if not os.path.exists(FEEDBACK_FILE):
+        with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
             json.dump([], f, indent=4)
 
 
@@ -130,6 +143,17 @@ def load_vendor_orders():
 
 def save_vendor_orders(data):
     with open(VENDOR_ORDERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
+
+
+def load_feedback():
+    ensure_feedback_file()
+    with open(FEEDBACK_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_feedback(data):
+    with open(FEEDBACK_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
 
@@ -310,6 +334,7 @@ def home():
         cart_items=cart_items,
         cart_total=cart_total,
         cart_count=cart_count,
+        feedback=load_feedback(),
     )
 
 
@@ -423,6 +448,22 @@ def customer_dashboard():
         customer_name=customer_name,
         customer_email=customer_email,
     )
+
+
+@app.route("/submit-feedback", methods=["POST"])
+def submit_feedback():
+    name = request.form.get("name", "Anonymous").strip()
+    message = request.form.get("message", "").strip()
+
+    if message:
+        feedback = load_feedback()
+        feedback.append({
+            "name": name if name else "Anonymous",
+            "message": message
+        })
+        save_feedback(feedback)
+
+    return redirect(url_for("home"))
 
 
 @app.route("/employee-signin", methods=["GET"])
@@ -790,5 +831,6 @@ if __name__ == "__main__":
     ensure_data_file()
     ensure_sales_log_file()
     ensure_vendor_orders_file()
+    ensure_feedback_file()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
