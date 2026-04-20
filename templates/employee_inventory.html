@@ -212,7 +212,7 @@
             <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
             <a class="ribbon-button" href="{{ url_for('employee_sales_log') }}">Sales</a>
             <a class="ribbon-button active" href="{{ url_for('employee_inventory') }}">Inventory</a>
-            <a class="ribbon-button" href="{{ url_for('employee_vendor_orders') }}">View Vendor Orders</a>
+            <a class="ribbon-button" href="{{ url_for('employee_vendor_orders') }}">Vendor Orders</a>
         </div>
 
         <div class="summary-row">
@@ -228,6 +228,24 @@
 
         <div class="panel">
             <h2>Inventory Listing</h2>
+<div style="margin-bottom: 16px;">
+    <a
+        href="{{ url_for('export_inventory_report') }}"
+        style="
+            display: inline-block;
+            background: #2f64e0;
+            color: white;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        "
+    >
+        Export Inventory CSV
+    </a>
+</div>
+
 
             <table>
                 <thead>
