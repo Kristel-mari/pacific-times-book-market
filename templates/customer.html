@@ -476,6 +476,12 @@
             {% if is_employee %}
                 <a class="nav-btn" href="{{ url_for('employee_dashboard') }}">Employee Dashboard</a>
                 <a class="nav-btn" href="{{ url_for('logout') }}">Employee Logout</a>
+            {% elif session.get("customer_name") %}
+                <a class="nav-btn" href="{{ url_for('customer_dashboard') }}">
+                    {{ session.get("customer_name") }}
+                </a>
+                <a class="nav-btn" href="{{ url_for('customer_logout') }}">Customer Logout</a>
+                <a class="cart-pill" href="#cart-section">Cart ({{ cart_count }})</a>
             {% else %}
                 <a class="nav-btn" href="{{ url_for('customer_signin') }}">Customer Sign In</a>
                 <a class="nav-btn" href="{{ url_for('employee_signin') }}">Employee Sign In</a>
@@ -645,15 +651,23 @@
         <h2 class="section-title">What Our Customers Say</h2>
 
         {% if feedback %}
-            <div class="feedback-list">
-                {% for item in feedback %}
-                    <div class="feedback-item">
-                        <strong>{{ item.name }}</strong>
-                        <p>{{ item.message }}</p>
-                    </div>
-                {% endfor %}
+    <div class="feedback-list">
+        {% for item in feedback %}
+            <div class="feedback-item">
+                <strong>{{ item.name if item.name else 'Anonymous' }}</strong>
+
+                <p>
+                    <strong>Rating:</strong>
+                    {% set stars = item.rating|int if item.rating and item.rating != 'Not Provided' else 0 %}
+                    {% for _ in range(stars) %}⭐{% endfor %}
+                    {% for _ in range(5 - stars) %}☆{% endfor %}
+                </p>
+
+                <p>{{ item.message }}</p>
             </div>
-        {% else %}
+        {% endfor %}
+    </div>
+{% else %}
             <div class="empty-message">No feedback yet. Be the first to share your thoughts!</div>
         {% endif %}
     </section>
