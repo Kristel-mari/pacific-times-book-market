@@ -113,15 +113,44 @@ def ensure_feedback_file():
             json.dump([], f, indent=4)
 
 
+def normalize_book(book):
+    book = dict(book)
+
+    try:
+        book["id"] = int(book.get("id", 0))
+    except (ValueError, TypeError):
+        book["id"] = 0
+
+    try:
+        book["price"] = float(book.get("price", 0))
+    except (ValueError, TypeError):
+        book["price"] = 0.0
+
+    try:
+        book["inventory"] = int(book.get("inventory", 0))
+    except (ValueError, TypeError):
+        book["inventory"] = 0
+
+    book["title"] = str(book.get("title", ""))
+    book["author"] = str(book.get("author", ""))
+    book["category"] = str(book.get("category", ""))
+    book["special_order"] = bool(book.get("special_order", False))
+    book["image"] = str(book.get("image", ""))
+
+    return book
+
+
 def load_books():
     ensure_data_file()
     with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+    return [normalize_book(book) for book in data]
 
 
 def save_books(data):
+    normalized = [normalize_book(book) for book in data]
     with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=4)
+        json.dump(normalized, f, indent=4)
 
 
 def load_sales_log():
@@ -159,7 +188,6 @@ def save_feedback(data):
 
 def add_vendor_order(vendor_name, book_title, quantity, status="Ordered"):
     orders = load_vendor_orders()
-
     new_order = {
         "vendor_name": vendor_name,
         "book_title": book_title,
@@ -167,7 +195,6 @@ def add_vendor_order(vendor_name, book_title, quantity, status="Ordered"):
         "status": status,
         "order_date": datetime.now().strftime("%Y-%m-%d")
     }
-
     orders.append(new_order)
     save_vendor_orders(orders)
 
@@ -204,7 +231,6 @@ def add_sale_record(customer_name, items, total_price, employee_name="System"):
 
     sales.append(sale_entry)
     save_sales_log(sales)
-
     return order_number
 
 
@@ -271,7 +297,7 @@ def build_cart_data():
     for book in books:
         book_id = str(book["id"])
         if book_id in cart:
-            quantity = cart[book_id]
+            quantity = int(cart[book_id])
             subtotal = quantity * book["price"]
             cart_items.append({
                 "id": book["id"],
@@ -318,6 +344,7 @@ def home():
         matches_title = title_query.lower() in book["title"].lower() if title_query else True
         matches_author = author_query.lower() in book["author"].lower() if author_query else True
         matches_category = book["category"] == category_query if category_query else True
+
         if matches_title and matches_author and matches_category:
             filtered_books.append(book)
 
@@ -334,7 +361,6 @@ def home():
         cart_items=cart_items,
         cart_total=cart_total,
         cart_count=cart_count,
-        feedback=load_feedback(),
     )
 
 
@@ -361,7 +387,7 @@ def clear_cart():
     cart = session.get("cart", {})
 
     for book in books:
-        quantity = cart.get(str(book["id"]), 0)
+        quantity = int(cart.get(str(book["id"]), 0))
         if quantity:
             book["inventory"] += quantity
 
@@ -452,18 +478,61 @@ def customer_dashboard():
 
 @app.route("/submit-feedback", methods=["POST"])
 def submit_feedback():
-    name = request.form.get("name", "Anonymous").strip()
+    name = request.form.get("name", "").strip()
+    email = request.form.get("email", "").strip()
+    rating = request.form.get("rating", "").strip()
     message = request.form.get("message", "").strip()
 
     if message:
         feedback = load_feedback()
-        feedback.append({
+        next_id = 1
+        if feedback:
+            next_id = max(item.get("id", 0) for item in feedback) + 1
+
+        feedback_entry = {
+            "id": next_id,
             "name": name if name else "Anonymous",
-            "message": message
-        })
+            "email": email,
+            "rating": rating if rating else "Not Provided",
+            "message": message,
+            "status": "New",
+            "submitted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        feedback.append(feedback_entry)
         save_feedback(feedback)
 
     return redirect(url_for("home"))
+
+
+@app.route("/employee-feedback", methods=["GET"])
+@login_required("employee")
+def employee_feedback():
+    employee_name = session.get("employee_name", "Store Employee")
+    feedback = load_feedback()
+    feedback = sorted(feedback, key=lambda x: x.get("submitted_at", ""), reverse=True)
+
+    return render_template(
+        "employee_feedback.html",
+        employee_name=employee_name,
+        feedback=feedback
+    )
+
+
+@app.route("/update-feedback-status/<int:feedback_id>", methods=["POST"])
+@login_required("employee")
+def update_feedback_status(feedback_id):
+    new_status = request.form.get("status", "").strip()
+    feedback = load_feedback()
+
+    for item in feedback:
+        if item.get("id") == feedback_id:
+            if new_status:
+                item["status"] = new_status
+            break
+
+    save_feedback(feedback)
+    return redirect(url_for("employee_feedback"))
 
 
 @app.route("/employee-signin", methods=["GET"])
@@ -483,12 +552,12 @@ def login():
         session["user_role"] = "employee"
         session["employee_name"] = username
         return redirect(url_for("employee_dashboard"))
-    else:
-        log_login(username if username else "Unknown", False)
-        return render_template(
-            "employee_signin.html",
-            error_message="Login unsuccessful. Please try again."
-        )
+
+    log_login(username if username else "Unknown", False)
+    return render_template(
+        "employee_signin.html",
+        error_message="Login unsuccessful. Please try again."
+    )
 
 
 @app.route("/employee-dashboard", methods=["GET"])
@@ -497,6 +566,7 @@ def employee_dashboard():
     employee_name = session.get("employee_name", "Store Employee")
     books = get_books()
     total_orders, total_revenue = get_sales_summary()
+    feedback_count = len(load_feedback())
 
     return render_template(
         "employee_dashboard.html",
@@ -505,6 +575,25 @@ def employee_dashboard():
         restock_message="",
         total_orders=total_orders,
         total_revenue=total_revenue,
+        feedback_count=feedback_count,
+    )
+
+
+@app.route("/employee-inventory", methods=["GET"])
+@login_required("employee")
+def employee_inventory():
+    employee_name = session.get("employee_name", "Store Employee")
+    books = get_books()
+
+    total_titles = len(books)
+    total_inventory = sum(book.get("inventory", 0) for book in books)
+
+    return render_template(
+        "employee_inventory.html",
+        employee_name=employee_name,
+        books=books,
+        total_titles=total_titles,
+        total_inventory=total_inventory,
     )
 
 
@@ -541,6 +630,7 @@ def employee_restock():
         restock_message = "Inventory update could not be completed. Please enter a valid quantity."
 
     total_orders, total_revenue = get_sales_summary()
+    feedback_count = len(load_feedback())
 
     return render_template(
         "employee_dashboard.html",
@@ -549,6 +639,7 @@ def employee_restock():
         restock_message=restock_message,
         total_orders=total_orders,
         total_revenue=total_revenue,
+        feedback_count=feedback_count,
     )
 
 
@@ -810,6 +901,7 @@ def restore_backup():
     employee_name = request.form.get("employee_name", "").strip()
     success, message = restore_latest_backup()
     total_orders, total_revenue = get_sales_summary()
+    feedback_count = len(load_feedback())
 
     return render_template(
         "employee_dashboard.html",
@@ -818,6 +910,28 @@ def restore_backup():
         restock_message=message,
         total_orders=total_orders,
         total_revenue=total_revenue,
+        feedback_count=feedback_count,
+    )
+
+
+@app.route("/create-backup", methods=["POST"])
+@login_required("employee")
+def create_backup():
+    employee_name = request.form.get("employee_name", "").strip()
+
+    backup_books()
+
+    total_orders, total_revenue = get_sales_summary()
+    feedback_count = len(load_feedback())
+
+    return render_template(
+        "employee_dashboard.html",
+        employee_name=employee_name if employee_name else session.get("employee_name", "Store Employee"),
+        books=get_books(),
+        restock_message="Backup created successfully.",
+        total_orders=total_orders,
+        total_revenue=total_revenue,
+        feedback_count=feedback_count,
     )
 
 

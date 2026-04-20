@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Inventory</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3fb;
+            margin: 0;
+            padding: 20px;
+            color: #16325c;
+        }
+
+        .page-wrapper {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        .top-storefront-link {
+            display: inline-block;
+            padding: 10px 16px;
+            background: white;
+            color: #1f3f8f;
+            text-decoration: none;
+            border: 1px solid #dde6f7;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .top-storefront-link:hover {
+            background: #f7f9fd;
+        }
+
+        .employee-header {
+            background: #2f64e0;
+            color: white;
+            padding: 26px 30px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+        }
+
+        .employee-header h1 {
+            margin: 0 0 8px 0;
+            font-size: 34px;
+            font-weight: 700;
+        }
+
+        .employee-header p {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .ribbon-bar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: #edf0f6;
+            border-radius: 18px;
+            padding: 8px;
+            margin-bottom: 18px;
+            border: 1px solid #dde6f7;
+        }
+
+        .ribbon-button {
+            display: inline-block;
+            padding: 11px 16px;
+            background-color: transparent;
+            color: #1f3f8f;
+            text-decoration: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .ribbon-button.active,
+        .ribbon-button:hover {
+            background-color: white;
+            color: #1b1d2e;
+        }
+
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(180px, 240px));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 1px solid #d8e3fb;
+            border-radius: 16px;
+            padding: 16px 18px;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 15px;
+            color: #214fd1;
+        }
+
+        .summary-card p {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #16325c;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e2e5ee;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #214fd1;
+            font-size: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 14px 10px;
+            border-bottom: 1px solid #ececf3;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        th {
+            font-size: 15px;
+            font-weight: 700;
+            color: #214fd1;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .status-in-stock {
+            background: #16c04d;
+        }
+
+        .status-low-stock {
+            background: #ff3131;
+        }
+
+        .status-out-stock {
+            background: #6b7280;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 14px;
+            }
+
+            .employee-header {
+                padding: 20px;
+            }
+
+            .employee-header h1 {
+                font-size: 30px;
+            }
+
+            .employee-header p {
+                font-size: 16px;
+            }
+
+            .summary-row {
+                grid-template-columns: 1fr;
+            }
+
+            .ribbon-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            th, td {
+                font-size: 13px;
+                padding: 10px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <a class="top-storefront-link" href="/">← Return to Storefront</a>
+
+        <div class="employee-header">
+            <h1>Inventory</h1>
+            <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}.</p>
+        </div>
+
+        <div class="ribbon-bar">
+            <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
+            <a class="ribbon-button" href="{{ url_for('employee_sales_log') }}">Sales</a>
+            <a class="ribbon-button active" href="{{ url_for('employee_inventory') }}">Inventory</a>
+            <a class="ribbon-button" href="{{ url_for('employee_vendor_orders') }}">View Vendor Orders</a>
+        </div>
+
+        <div class="summary-row">
+            <div class="summary-card">
+                <h3>Total Titles</h3>
+                <p>{{ total_titles }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Total Units in Stock</h3>
+                <p>{{ total_inventory }}</p>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Inventory Listing</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Book ID</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Inventory</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{ book.id }}</td>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author }}</td>
+                        <td>{{ book.category }}</td>
+                        <td>${{ "%.2f"|format(book.price) }}</td>
+                        <td>{{ book.inventory }}</td>
+                        <td>
+                            {% if book.inventory == 0 %}
+                                <span class="status-badge status-out-stock">Out of Stock</span>
+                            {% elif book.inventory <= 5 %}
+                                <span class="status-badge status-low-stock">Low Stock</span>
+                            {% else %}
+                                <span class="status-badge status-in-stock">In Stock</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">No inventory records found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
