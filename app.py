@@ -905,10 +905,28 @@ def employee_vendor_orders():
     employee_name = session.get("employee_name", "Store Employee")
     orders = load_vendor_orders()
 
+    selected_date = request.args.get("order_date", "").strip()
+    sort_order = request.args.get("sort", "newest").strip().lower()
+
+    filtered_orders = orders[:]
+
+    if selected_date:
+        filtered_orders = [
+            order for order in filtered_orders
+            if order.get("order_date", "") == selected_date
+        ]
+
+    filtered_orders.sort(
+        key=lambda x: x.get("order_date", ""),
+        reverse=(sort_order != "oldest")
+    )
+
     return render_template(
         "employee_vendor_orders.html",
         employee_name=employee_name,
-        orders=orders
+        orders=filtered_orders,
+        selected_date=selected_date,
+        sort_order=sort_order
     )
 
 
