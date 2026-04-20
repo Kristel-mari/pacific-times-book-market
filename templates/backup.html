@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3fb;
+            padding: 32px;
+            margin: 0;
+            color: #16325c;
+        }
+
+        .header {
+            background: #2f64e0;
+            color: white;
+            padding: 24px 28px;
+            border-radius: 18px;
+            margin-bottom: 24px;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 10px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .panel {
+            background: #f9fbff;
+            border: 1px solid #bfd3fb;
+            border-radius: 22px;
+            padding: 22px;
+        }
+
+        .backup-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .inline-button {
+            background: #2f64e0;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .inline-button:hover {
+            background: #1f4fbf;
+        }
+
+        .procedure-list {
+            padding-left: 22px;
+            color: #335c99;
+            line-height: 1.7;
+        }
+
+        .procedure-text {
+            color: #335c99;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Backup & Restore Management</h1>
+    <p>Signed in as {{ employee_name }}</p>
+    <a href="{{ url_for('employee_dashboard') }}">← Back to Dashboard</a>
+</div>
+
+<div class="panel">
+    <p class="procedure-text">
+        Use the controls below to create a backup or restore system data.
+    </p>
+
+    <div class="backup-actions">
+        <form method="POST" action="/create-backup">
+            <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+            <button class="inline-button" type="submit">Create Backup Now</button>
+        </form>
+
+        <form method="POST" action="/restore-backup">
+            <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+            <button class="inline-button" type="submit">Restore Latest Backup</button>
+        </form>
+    </div>
+
+    <h3>Data Restoration Procedure</h3>
+    <ol class="procedure-list">
+        <li>Identify data loss or corruption.</li>
+        <li>Navigate to Backup Management.</li>
+        <li>Select Restore Latest Backup.</li>
+        <li>Wait for confirmation.</li>
+        <li>Verify system data accuracy.</li>
+    </ol>
+
+    <h3>Manual Backup Procedure</h3>
+    <ol class="procedure-list">
+        <li>Navigate to Backup Management.</li>
+        <li>Select Create Backup Now.</li>
+        <li>Wait for confirmation.</li>
+        <li>Continue operations.</li>
+    </ol>
+</div>
+
+</body>
+</html>
