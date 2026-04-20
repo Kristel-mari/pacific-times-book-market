@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Customer Feedback Review</title>
-
+    <title>Employee Feedback Review</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,64 +13,32 @@
             color: #16325c;
         }
 
-        .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 14px;
-}
-
-.top-bar-left,
-.top-bar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.top-storefront-link,
-.top-action-link,
-.top-action-button {
-    display: inline-block;
-    padding: 10px 16px;
-    text-decoration: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.top-storefront-link,
-.top-action-link {
-    background: white;
-    color: #1f3f8f;
-    border: 1px solid #dde6f7;
-}
-
-.top-action-button {
-    font-family: Arial, sans-serif;
-    background: #2f64e0;
-    color: white;
-    border: 1px solid #2f64e0;
-}
-
-.top-action-button:hover {
-    background: #2557cf;
-}
-
-.inline-form {
-    display: inline-block;
-    margin: 0;
-}
-
         .page-wrapper {
             max-width: 1240px;
             margin: 0 auto;
         }
 
-        .top-storefront-link {
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .top-bar-left,
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .top-storefront-link,
+        .top-action-link,
+        .secondary-action-button,
+        .tab-button {
             display: inline-block;
             padding: 10px 16px;
             background: white;
@@ -81,7 +48,40 @@
             border-radius: 12px;
             font-size: 14px;
             font-weight: 700;
-            margin-bottom: 14px;
+            transition: 0.2s ease;
+            cursor: pointer;
+        }
+
+        .top-storefront-link:hover,
+        .top-action-link:hover,
+        .secondary-action-button:hover,
+        .tab-button:hover {
+            background: #f7f9fd;
+        }
+
+        .top-action-button,
+        .primary-button {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #2f64e0;
+            color: white;
+            text-decoration: none;
+            border: 1px solid #2f64e0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.2s ease;
+            cursor: pointer;
+        }
+
+        .top-action-button:hover,
+        .primary-button:hover {
+            background: #2557cf;
+        }
+
+        .inline-form {
+            display: inline-block;
+            margin: 0;
         }
 
         .employee-header {
@@ -95,6 +95,7 @@
         .employee-header h1 {
             margin: 0 0 8px 0;
             font-size: 34px;
+            font-weight: 700;
         }
 
         .employee-header p {
@@ -105,186 +106,244 @@
         .ribbon-bar {
             display: flex;
             gap: 8px;
+            align-items: center;
             flex-wrap: wrap;
             background: #edf0f6;
-            padding: 8px;
             border-radius: 18px;
+            padding: 8px;
             margin-bottom: 18px;
             border: 1px solid #dde6f7;
         }
 
         .ribbon-button {
+            display: inline-block;
             padding: 11px 16px;
-            text-decoration: none;
+            background-color: transparent;
             color: #1f3f8f;
+            text-decoration: none;
             border-radius: 14px;
             font-size: 15px;
             font-weight: 600;
+            transition: 0.2s ease;
         }
 
         .ribbon-button.active,
         .ribbon-button:hover {
-            background: white;
+            background-color: white;
             color: #1b1d2e;
         }
 
-        .subtab-row {
+        .panel {
+            background: white;
+            border: 1px solid #e2e5ee;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            color: #214fd1;
+            font-size: 22px;
+        }
+
+        .tab-row {
             display: flex;
             gap: 12px;
+            flex-wrap: wrap;
             margin-bottom: 18px;
         }
 
-        .subtab-button {
-            padding: 12px 18px;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 700;
-            text-decoration: none;
-            border: 1px solid #bcd1fb;
-            background: white;
-            color: #2450cc;
-        }
-
-        .subtab-button.active {
+        .tab-button.active {
             background: #2f64e0;
             color: white;
             border-color: #2f64e0;
         }
 
         .feedback-card {
-            background: white;
-            border: 1px solid #d8e3fb;
+            border: 1px solid #e2e5ee;
             border-radius: 18px;
-            padding: 22px;
-            margin-bottom: 18px;
+            padding: 18px;
+            margin-bottom: 16px;
+            background: #fff;
         }
 
-        .meta {
-            font-size: 14px;
-            margin-bottom: 12px;
-        }
-
-        textarea,
-        select {
-            font-size: 14px;
-            border-radius: 12px;
-            border: 1px solid #8fb6ff;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
+        .feedback-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
             margin-bottom: 10px;
         }
 
-        select {
-            padding: 10px 12px;
-        }
-
-        .btn {
-            background: #2f64e0;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 16px;
+        .feedback-name {
+            font-size: 17px;
             font-weight: 700;
-            cursor: pointer;
+            color: #16325c;
+            margin: 0 0 4px 0;
         }
 
-        .delete-btn {
-            background: #dc2626;
+        .feedback-meta {
+            font-size: 13px;
+            color: #5c6f95;
+            margin: 0;
         }
 
+        .rating-stars {
+            color: #214fd1;
+            font-size: 16px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .feedback-book {
+            font-size: 14px;
+            color: #214fd1;
+            font-weight: 700;
+            margin: 8px 0 10px 0;
+        }
+
+        .feedback-text {
+            margin: 0 0 14px 0;
+            line-height: 1.5;
+        }
+
+        .feedback-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            padding: 18px;
+            border-radius: 16px;
+            background: #f8faff;
+            border: 1px dashed #cfe0ff;
+            color: #4f6289;
+            font-weight: 700;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 14px;
+            }
+
+            .employee-header {
+                padding: 20px;
+            }
+
+            .employee-header h1 {
+                font-size: 30px;
+            }
+
+            .employee-header p {
+                font-size: 16px;
+            }
+
+            .ribbon-button,
+            .tab-button,
+            .top-action-button,
+            .primary-button,
+            .secondary-action-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            .feedback-actions form,
+            .feedback-actions a,
+            .feedback-actions button {
+                width: 100%;
+            }
+        }
     </style>
 </head>
-
 <body>
-<div class="page-wrapper">
+    <div class="page-wrapper">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <a class="top-storefront-link" href="/">← Return to Storefront</a>
+            </div>
 
-<div class="top-bar">
-    <div class="top-bar-left">
-        <a class="top-storefront-link" href="/">← Return to Storefront</a>
-    </div>
+            <div class="top-bar-right">
+                <a class="top-action-link" href="{{ url_for('backup_page') }}">Backup</a>
 
-    <div class="top-bar-right">
-        <a class="top-action-link" href="{{ url_for('backup_page') }}">
-            Backup
-        </a>
-
-        <form method="POST" action="{{ url_for('restore_backup') }}" class="inline-form">
-            <button type="submit" class="top-action-button">
-                Restore Latest Backup
-            </button>
-        </form>
-    </div>
-</div>
-
-    <div class="employee-header">
-        <h1>Customer Feedback Review</h1>
-        <p>Signed in as {{ employee_name }}</p>
-    </div>
-
-    <div class="ribbon-bar">
-        <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
-        <a class="ribbon-button" href="{{ url_for('employee_sales_log') }}">Sales</a>
-        <a class="ribbon-button" href="{{ url_for('employee_inventory') }}">Inventory</a>
-        <a class="ribbon-button" href="{{ url_for('employee_vendor_orders') }}">Vendor Orders</a>
-        <a class="ribbon-button active" href="{{ url_for('employee_feedback', tab='open') }}">Feedback</a>
-    </div>
-
-    <div class="subtab-row">
-        <a class="subtab-button {% if current_tab == 'open' %}active{% endif %}"
-           href="{{ url_for('employee_feedback', tab='open') }}">
-           Open Reviews ({{ open_count }})
-        </a>
-
-        <a class="subtab-button {% if current_tab == 'resolved' %}active{% endif %}"
-           href="{{ url_for('employee_feedback', tab='resolved') }}">
-           Resolved Reviews ({{ resolved_count }})
-        </a>
-    </div>
-
-    {% for item in feedback %}
-    <div class="feedback-card">
-        <h3>{{ item.name }}</h3>
-
-        <div class="meta">
-            Email: {{ item.email or 'Not Provided' }} |
-            Rating: {{ item.rating or 'Not Provided' }} |
-            Submitted: {{ item.submitted_at or 'Not Available' }} |
-            Status: <strong>{{ item.status or 'New' }}</strong>
+                <form method="POST" action="{{ url_for('restore_backup') }}" class="inline-form">
+                    <button type="submit" class="top-action-button">Restore Latest Backup</button>
+                </form>
+            </div>
         </div>
 
-        <p><strong>Customer Message:</strong><br>{{ item.message }}</p>
+        <div class="employee-header">
+            <h1>Employee Feedback Review</h1>
+            <p>Signed in as {{ employee_name if employee_name else 'Store Employee' }}.</p>
+        </div>
 
-        {% if item.manager_response %}
-        <p><strong>Manager Response:</strong><br>{{ item.manager_response }}</p>
-        {% endif %}
+        <div class="ribbon-bar">
+            <a class="ribbon-button {% if active_page == 'dashboard' %}active{% endif %}" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
+            <a class="ribbon-button {% if active_page == 'sales' %}active{% endif %}" href="{{ url_for('employee_sales_log') }}">Sales</a>
+            <a class="ribbon-button {% if active_page == 'inventory' %}active{% endif %}" href="{{ url_for('employee_inventory') }}">Inventory</a>
+            <a class="ribbon-button {% if active_page == 'vendor_orders' %}active{% endif %}" href="{{ url_for('employee_vendor_orders') }}">Vendor Orders</a>
+            <a class="ribbon-button {% if active_page == 'feedback' %}active{% endif %}" href="{{ url_for('employee_feedback', tab='open') }}">Feedback</a>
+        </div>
 
-        {% if current_tab == 'open' %}
-        <form method="POST" action="/update-feedback-status/{{ item.id }}">
-            <select name="status">
-                <option value="New">New</option>
-                <option value="Reviewed">Reviewed</option>
-                <option value="Resolved">Resolved</option>
-            </select>
-            <button class="btn">Update Status</button>
-        </form>
+        <div class="panel">
+            <h2>Customer Feedback</h2>
 
-        <form method="POST" action="/respond-to-feedback/{{ item.id }}">
-            <textarea name="manager_response"
-                placeholder="Write a response...">{{ item.manager_response or '' }}</textarea>
-            <button class="btn">Save Response</button>
-        </form>
-        {% endif %}
+            <div class="tab-row">
+                <a href="{{ url_for('employee_feedback', tab='open') }}"
+                   class="tab-button {% if current_tab == 'open' %}active{% endif %}">Open Feedback</a>
 
-        <form method="POST" action="/delete-feedback/{{ item.id }}">
-            <button class="btn delete-btn">Delete</button>
-        </form>
+                <a href="{{ url_for('employee_feedback', tab='resolved') }}"
+                   class="tab-button {% if current_tab == 'resolved' %}active{% endif %}">Resolved Feedback</a>
+            </div>
+
+            {% if feedback_list and feedback_list|length > 0 %}
+                {% for item in feedback_list %}
+                    <div class="feedback-card">
+                        <div class="feedback-top">
+                            <div>
+                                <p class="feedback-name">{{ item.customer_name if item.customer_name else 'Customer' }}</p>
+                                <p class="feedback-meta">
+                                    {{ item.date if item.date else 'No date provided' }}
+                                </p>
+                            </div>
+
+                            <div class="rating-stars">
+                                {% set rating_value = item.rating|int if item.rating is defined and item.rating else 0 %}
+                                {% for _ in range(rating_value) %}★{% endfor %}
+                                {% for _ in range(5 - rating_value) %}☆{% endfor %}
+                            </div>
+                        </div>
+
+                        {% if item.book_title %}
+                            <div class="feedback-book">Book: {{ item.book_title }}</div>
+                        {% endif %}
+
+                        <p class="feedback-text">{{ item.review if item.review else item.comment if item.comment else 'No written feedback provided.' }}</p>
+
+                        <div class="feedback-actions">
+                            {% if current_tab == 'open' %}
+                                <form method="POST" action="{{ url_for('resolve_feedback') }}" class="inline-form">
+                                    <input type="hidden" name="feedback_id" value="{{ item.id }}">
+                                    <button type="submit" class="primary-button">Mark Resolved</button>
+                                </form>
+                            {% else %}
+                                <form method="POST" action="{{ url_for('reopen_feedback') }}" class="inline-form">
+                                    <input type="hidden" name="feedback_id" value="{{ item.id }}">
+                                    <button type="submit" class="secondary-action-button">Reopen</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    No feedback found in this section.
+                </div>
+            {% endif %}
+        </div>
     </div>
-    {% endfor %}
-
-</div>
 </body>
 </html>
