@@ -634,70 +634,8 @@
     </section>
     {% endif %}
 
-    <section class="feedback-section" id="feedback">
-        <h2 class="section-title">Customer Feedback</h2>
-        <p class="section-subtitle">See what others are saying and share your thoughts.</p>
-
-        <div class="feedback-card">
-            <form class="feedback-form" method="POST" action="{{ url_for('submit_feedback') }}">
-                <input type="text" name="name" placeholder="Your name (optional)">
-                <textarea name="message" placeholder="Write your feedback..." rows="4" required></textarea>
-                <button class="feedback-submit-btn" type="submit">Submit Feedback</button>
-            </form>
-        </div>
-    </section>
-
-    <section class="feedback-section">
-        <h2 class="section-title">What Our Customers Say</h2>
-
-        {% if feedback %}
-    <div class="feedback-list">
-        {% for item in feedback %}
-            <div class="feedback-item">
-                <strong>{{ item.name if item.name else 'Anonymous' }}</strong>
-
-                <p>
-                    <strong>Rating:</strong>
-                    {% set stars = item.rating|int if item.rating and item.rating != 'Not Provided' else 0 %}
-                    {% for _ in range(stars) %}⭐{% endfor %}
-                    {% for _ in range(5 - stars) %}☆{% endfor %}
-                </p>
-
-                <p>{{ item.message }}</p>
-            </div>
-        {% endfor %}
-    </div>
-{% else %}
-            <div class="empty-message">No feedback yet. Be the first to share your thoughts!</div>
-        {% endif %}
-    </section>
-
-    <section class="feedback-section">
-        <h2 class="section-title">How We Respond to Feedback</h2>
-        <p class="section-subtitle">We value our customers and take action on every suggestion.</p>
-
-        <div class="feedback-list">
-            <div class="feedback-item">
-                <strong>Customer Feedback:</strong>
-                <p>"I wish there were more mystery books available."</p>
-                <strong style="display:block; margin-top:10px;">Action Taken:</strong>
-                <p style="color: #1d4ed8;">Added 5 new mystery titles to our inventory this month.</p>
-            </div>
-
-            <div class="feedback-item">
-                <strong>Customer Feedback:</strong>
-                <p>"Checkout process could be faster."</p>
-                <strong style="display:block; margin-top:10px;">Action Taken:</strong>
-                <p style="color: #1d4ed8;">Simplified cart layout and reduced checkout steps.</p>
-            </div>
-
-            <div class="feedback-item">
-                <strong>Customer Feedback:</strong>
-                <p>"It would be nice to see low stock warnings."</p>
-                <strong style="display:block; margin-top:10px;">Action Taken:</strong>
-                <p style="color: #1d4ed8;">Added inventory alerts to highlight low and out-of-stock books.</p>
-            </div>
-        </div>
+    
+    
     </section>
 </body>
 </html>

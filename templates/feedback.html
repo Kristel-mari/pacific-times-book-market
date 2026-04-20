@@ -6,355 +6,201 @@
     <title>Customer Feedback</title>
     <style>
         body {
-    font-family: Arial, sans-serif;
-    background: #eef3fb;
-    margin: 0;
-    padding: 20px;
-    color: #16325c;
-}
+            font-family: Arial, sans-serif;
+            background: #f3f3f5;
+            margin: 0;
+            padding: 20px;
+            color: #000000;
+        }
 
-.page-wrapper {
-    max-width: 1240px;
-    margin: 0 auto;
-}
+        .page-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-.top-storefront-link,
-.top-action-button,
-.secondary-action-button {
-    display: inline-block;
-    padding: 10px 16px;
-    text-decoration: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    transition: 0.2s ease;
-}
+        .page-header {
+            margin-bottom: 24px;
+        }
 
-.top-storefront-link,
-.secondary-action-button {
-    background: white;
-    color: #1f3f8f;
-    border: 1px solid #dde6f7;
-}
+        .page-header a {
+            display: inline-block;
+            margin-bottom: 14px;
+            text-decoration: none;
+            font-weight: 700;
+            color: #f3f3f5;
+            background: rgb(0, 0, 0);
+            border: 1px solid #bebdbd;
+            padding: 10px 16px;
+            border-radius: 12px;
+        }
 
-.top-storefront-link:hover,
-.secondary-action-button:hover {
-    background: #f7f9fd;
-}
+        .page-header a:hover {
+            background: #000000;
+        }
 
-.top-action-button {
-    background: #2f64e0;
-    color: white;
-    border: 1px solid #2f64e0;
-}
+        .page-header h1 {
+            margin: 0 0 8px 0;
+            font-size: 32px;
+            color: #000000;
+        }
 
-.top-action-button:hover {
-    background: #2557cf;
-}
+        .page-header p {
+            margin: 0;
+            color: #000000;
+            font-size: 16px;
+        }
 
-.top-links-row {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
-}
+        .feedback-card {
+            background: white;
+            border: 1px solid #e2e5ee;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        }
 
-.employee-header {
-    background: #2f64e0;
-    color: white;
-    padding: 26px 30px;
-    border-radius: 20px;
-    margin-bottom: 18px;
-}
+        .feedback-form {
+            display: grid;
+            gap: 12px;
+        }
 
-.employee-header h1 {
-    margin: 0 0 8px 0;
-    font-size: 34px;
-    font-weight: 700;
-}
+        .feedback-form input,
+        .feedback-form textarea,
+        .feedback-form select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #cfcfcf;
+            font-size: 15px;
+            background: #fff;
+            color: #000000;
+            box-sizing: border-box;
+        }
 
-.employee-header p {
-    margin: 0;
-    font-size: 17px;
-}
+        .feedback-form textarea {
+            resize: vertical;
+        }
 
-.ribbon-bar {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: wrap;
-    background: #edf0f6;
-    border-radius: 18px;
-    padding: 8px;
-    margin-bottom: 18px;
-    border: 1px solid #dde6f7;
-}
+        .feedback-submit-btn {
+            background: #000000;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            width: fit-content;
+        }
 
-.ribbon-button {
-    display: inline-block;
-    padding: 11px 16px;
-    background-color: transparent;
-    color: #1f3f8f;
-    text-decoration: none;
-    border-radius: 14px;
-    font-size: 15px;
-    font-weight: 600;
-    transition: 0.2s ease;
-}
+        .feedback-submit-btn:hover {
+            background: #000000;
+        }
 
-.ribbon-button.active,
-.ribbon-button:hover {
-    background-color: white;
-    color: #1b1d2e;
-}
+        .feedback-list {
+            display: grid;
+            gap: 16px;
+        }
 
-.panel {
-    background: white;
-    border: 1px solid #e2e5ee;
-    border-radius: 24px;
-    padding: 24px;
-    margin-bottom: 20px;
-}
+        .feedback-item {
+            background: white;
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid #e2e5ee;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
 
-.panel h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #214fd1;
-    font-size: 22px;
-}
+        .feedback-item p {
+            margin: 10px 0 0 0;
+            color: #000000;
+            line-height: 1.5;
+        }
 
-.summary-row {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(180px, 240px));
-    gap: 14px;
-    margin-bottom: 20px;
-}
+        .response {
+            background: #f3f3f3;
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #dbdbdb;
+            color: #000000;
+        }
 
-.summary-card {
-    background: white;
-    border: 1px solid #d8e3fb;
-    border-radius: 16px;
-    padding: 16px 18px;
-}
+        @media (max-width: 700px) {
+            body {
+                padding: 14px;
+            }
 
-.summary-card h3 {
-    margin: 0 0 8px 0;
-    font-size: 15px;
-    color: #214fd1;
-}
+            .page-header h1 {
+                font-size: 28px;
+            }
 
-.summary-card p {
-    margin: 0;
-    font-size: 24px;
-    font-weight: 700;
-    color: #16325c;
-}
+            .feedback-card,
+            .feedback-item {
+                padding: 18px;
+            }
 
-.filter-form {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    align-items: flex-end;
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-}
-
-.filter-group label {
-    font-weight: 700;
-    color: #214fd1;
-    margin-bottom: 6px;
-    font-size: 14px;
-}
-
-.filter-group input,
-.filter-group select {
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid #8fb6ff;
-    font-size: 14px;
-    background: white;
-    color: #16325c;
-}
-
-.button-group {
-    display: flex;
-    gap: 10px;
-    align-items: flex-end;
-}
-
-.submit-button {
-    background: #2f64e0;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 12px 18px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-.clear-button {
-    display: inline-block;
-    background: white;
-    color: #1f3f8f;
-    border: 1px solid #8fb6ff;
-    padding: 12px 18px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th,
-td {
-    text-align: left;
-    padding: 14px 10px;
-    border-bottom: 1px solid #ececf3;
-    font-size: 14px;
-    vertical-align: middle;
-}
-
-th {
-    font-size: 15px;
-    font-weight: 700;
-    color: #214fd1;
-}
-
-.status-badge {
-    display: inline-block;
-    padding: 8px 14px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 700;
-    color: white;
-}
-
-.status-in-stock {
-    background: #16c04d;
-}
-
-.status-low-stock {
-    background: #ff3131;
-}
-
-.status-out-stock {
-    background: #6b7280;
-}
-
-@media (max-width: 700px) {
-    body {
-        padding: 14px;
-    }
-
-    .employee-header {
-        padding: 20px;
-    }
-
-    .employee-header h1 {
-        font-size: 30px;
-    }
-
-    .employee-header p {
-        font-size: 16px;
-    }
-
-    .summary-row {
-        grid-template-columns: 1fr;
-    }
-
-    .ribbon-button {
-        width: 100%;
-        text-align: center;
-    }
-
-    .filter-form {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .button-group {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .submit-button,
-    .clear-button {
-        width: 100%;
-        text-align: center;
-    }
-
-    th,
-    td {
-        font-size: 13px;
-        padding: 10px 6px;
-    }
-}
+            .feedback-submit-btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-
-    <div class="page-header">
-        <a href="{{ url_for('home') }}">← Back to Store</a>
-        <h1>Customer Feedback</h1>
-        <p>Leave a review and see what other customers are saying.</p>
-    </div>
-
-    <div class="feedback-card">
-        <form class="feedback-form" method="POST" action="{{ url_for('submit_feedback') }}">
-            <input type="text" name="name" placeholder="Your name (optional)">
-
-            <select name="rating" required>
-                <option value="">Select a rating</option>
-                <option value="1">⭐ 1 Star</option>
-                <option value="2">⭐⭐ 2 Stars</option>
-                <option value="3">⭐⭐⭐ 3 Stars</option>
-                <option value="4">⭐⭐⭐⭐ 4 Stars</option>
-                <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
-            </select>
-
-            <textarea name="message" placeholder="Write your feedback..." rows="4" required></textarea>
-            <button class="feedback-submit-btn" type="submit">Submit Feedback</button>
-        </form>
-    </div>
-
-    {% if feedback %}
-        <div class="feedback-list">
-            {% for item in feedback %}
-                <div class="feedback-item">
-                    <strong>{{ item.name if item.name else 'Anonymous' }}</strong>
-
-                    <p>
-                        <strong>Rating:</strong>
-                        {% set stars = item.rating|int if item.rating and item.rating != 'Not Provided' else 0 %}
-                        {% for _ in range(stars) %}⭐{% endfor %}
-                        {% for _ in range(5 - stars) %}☆{% endfor %}
-                    </p>
-
-                    <p>
-                        <strong>Customer Feedback:</strong><br>
-                        {{ item.message }}
-                    </p>
-
-                    {% if item.manager_response and item.manager_response|trim %}
-                        <div class="response">
-                            <strong>Our Response:</strong><br>
-                            {{ item.manager_response }}
-                        </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+    <div class="page-wrapper">
+        <div class="page-header">
+            <a href="{{ url_for('home') }}">← Back to Store</a>
+            <h1>Customer Feedback</h1>
+            <p>Leave a review and see what other customers are saying.</p>
         </div>
-    {% else %}
-        <p>No feedback yet.</p>
-    {% endif %}
 
+        <div class="feedback-card">
+            <form class="feedback-form" method="POST" action="{{ url_for('submit_feedback') }}">
+                <input type="text" name="name" placeholder="Your name (optional)">
+
+                <select name="rating" required>
+                    <option value="">Select a rating</option>
+                    <option value="1">⭐ 1 Star</option>
+                    <option value="2">⭐⭐ 2 Stars</option>
+                    <option value="3">⭐⭐⭐ 3 Stars</option>
+                    <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                    <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                </select>
+
+                <textarea name="message" placeholder="Write your feedback..." rows="4" required></textarea>
+                <button class="feedback-submit-btn" type="submit">Submit Feedback</button>
+            </form>
+        </div>
+
+        {% if feedback %}
+            <div class="feedback-list">
+                {% for item in feedback %}
+                    <div class="feedback-item">
+                        <strong>{{ item.name if item.name else 'Anonymous' }}</strong>
+
+                        <p>
+                            <strong>Rating:</strong>
+                            {% set stars = item.rating|int if item.rating and item.rating != 'Not Provided' else 0 %}
+                            {% for _ in range(stars) %}⭐{% endfor %}
+                            {% for _ in range(5 - stars) %}☆{% endfor %}
+                        </p>
+
+                        <p>
+                            <strong>Customer Feedback:</strong><br>
+                            {{ item.message }}
+                        </p>
+
+                        {% if item.manager_response and item.manager_response|trim %}
+                            <div class="response">
+                                <strong>Our Response:</strong><br>
+                                {{ item.manager_response }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No feedback yet.</p>
+        {% endif %}
+    </div>
 </body>
 </html>
