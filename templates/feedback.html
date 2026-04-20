@@ -6,93 +6,297 @@
     <title>Customer Feedback</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f3f3f5;
-            color: #111;
-            padding: 30px;
-            margin: 0;
-        }
+    font-family: Arial, sans-serif;
+    background: #eef3fb;
+    margin: 0;
+    padding: 20px;
+    color: #16325c;
+}
 
-        .page-header {
-            margin-bottom: 24px;
-        }
+.page-wrapper {
+    max-width: 1240px;
+    margin: 0 auto;
+}
 
-        .page-header a {
-            display: inline-block;
-            margin-bottom: 14px;
-            text-decoration: none;
-            font-weight: bold;
-            color: #2563eb;
-        }
+.top-storefront-link,
+.top-action-button,
+.secondary-action-button {
+    display: inline-block;
+    padding: 10px 16px;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
 
-        .page-header h1 {
-            margin: 0 0 8px 0;
-        }
+.top-storefront-link,
+.secondary-action-button {
+    background: white;
+    color: #1f3f8f;
+    border: 1px solid #dde6f7;
+}
 
-        .page-header p {
-            margin: 0;
-            color: #555;
-        }
+.top-storefront-link:hover,
+.secondary-action-button:hover {
+    background: #f7f9fd;
+}
 
-        .feedback-card {
-            background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-            margin-bottom: 24px;
-        }
+.top-action-button {
+    background: #2f64e0;
+    color: white;
+    border: 1px solid #2f64e0;
+}
 
-        .feedback-form {
-            display: grid;
-            gap: 12px;
-        }
+.top-action-button:hover {
+    background: #2557cf;
+}
 
-        .feedback-form input,
-        .feedback-form textarea,
-        .feedback-form select {
-            width: 100%;
-            padding: 12px 14px;
-            border-radius: 12px;
-            border: 1px solid #d6d6d6;
-            font-size: 15px;
-            background: #fff;
-            box-sizing: border-box;
-        }
+.top-links-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
 
-        .feedback-submit-btn {
-            background: #050505;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 14px 22px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+.employee-header {
+    background: #2f64e0;
+    color: white;
+    padding: 26px 30px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+}
 
-        .feedback-list {
-            display: grid;
-            gap: 16px;
-        }
+.employee-header h1 {
+    margin: 0 0 8px 0;
+    font-size: 34px;
+    font-weight: 700;
+}
 
-        .feedback-item {
-            background: white;
-            padding: 16px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
+.employee-header p {
+    margin: 0;
+    font-size: 17px;
+}
 
-        .feedback-item p {
-            margin-top: 8px;
-            color: #555;
-        }
+.ribbon-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: #edf0f6;
+    border-radius: 18px;
+    padding: 8px;
+    margin-bottom: 18px;
+    border: 1px solid #dde6f7;
+}
 
-        .response {
-            background: #eef6ff;
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 8px;
-        }
+.ribbon-button {
+    display: inline-block;
+    padding: 11px 16px;
+    background-color: transparent;
+    color: #1f3f8f;
+    text-decoration: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.ribbon-button.active,
+.ribbon-button:hover {
+    background-color: white;
+    color: #1b1d2e;
+}
+
+.panel {
+    background: white;
+    border: 1px solid #e2e5ee;
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.panel h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #214fd1;
+    font-size: 22px;
+}
+
+.summary-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 240px));
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    background: white;
+    border: 1px solid #d8e3fb;
+    border-radius: 16px;
+    padding: 16px 18px;
+}
+
+.summary-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    color: #214fd1;
+}
+
+.summary-card p {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #16325c;
+}
+
+.filter-form {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-weight: 700;
+    color: #214fd1;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #8fb6ff;
+    font-size: 14px;
+    background: white;
+    color: #16325c;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.submit-button {
+    background: #2f64e0;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.clear-button {
+    display: inline-block;
+    background: white;
+    color: #1f3f8f;
+    border: 1px solid #8fb6ff;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 14px 10px;
+    border-bottom: 1px solid #ececf3;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+th {
+    font-size: 15px;
+    font-weight: 700;
+    color: #214fd1;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+}
+
+.status-in-stock {
+    background: #16c04d;
+}
+
+.status-low-stock {
+    background: #ff3131;
+}
+
+.status-out-stock {
+    background: #6b7280;
+}
+
+@media (max-width: 700px) {
+    body {
+        padding: 14px;
+    }
+
+    .employee-header {
+        padding: 20px;
+    }
+
+    .employee-header h1 {
+        font-size: 30px;
+    }
+
+    .employee-header p {
+        font-size: 16px;
+    }
+
+    .summary-row {
+        grid-template-columns: 1fr;
+    }
+
+    .ribbon-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .button-group {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .submit-button,
+    .clear-button {
+        width: 100%;
+        text-align: center;
+    }
+
+    th,
+    td {
+        font-size: 13px;
+        padding: 10px 6px;
+    }
+}
     </style>
 </head>
 <body>
