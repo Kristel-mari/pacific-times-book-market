@@ -245,8 +245,7 @@
             <div class="employee-actions">
                 <a href="/">Return to customer storefront</a>
                 <a href="{{ url_for('export_inventory_report') }}">Export Inventory Report (CSV)</a>
-                <a href="{{ url_for('logout') }}">Employee Logout</a>
-                
+
                 <form method="POST" action="/restore-backup">
                     <input type="hidden" name="employee_name" value="{{ employee_name }}" />
                     <button type="submit">Restore Latest Backup</button>
@@ -257,8 +256,7 @@
         <div class="ribbon-bar">
             <a class="ribbon-button active" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
             <a class="ribbon-button" href="{{ url_for('employee_sales_log') }}">Sales</a>
-            <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Inventory</a>
-            <a class="ribbon-button" href="{{ url_for('employee_add_sale') }}">Manual Sale</a>
+            <a class="ribbon-button" href="{{ url_for('employee_inventory') }}">Inventory</a>
             <a class="ribbon-button" href="{{ url_for('employee_vendor_orders') }}">View Vendor Orders</a>
         </div>
 
