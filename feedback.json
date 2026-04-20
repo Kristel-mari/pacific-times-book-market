@@ -8,5 +8,15 @@
         "status": "Resolved",
         "submitted_at": "2026-04-19 18:05:39",
         "manager_response": "Thanks so much! Glad you love the books!"
+    },
+    {
+        "id": 2,
+        "name": "Sara",
+        "email": "",
+        "rating": "Not Provided",
+        "message": "Needs more inventory",
+        "status": "New",
+        "submitted_at": "2026-04-19 23:24:27",
+        "manager_response": ""
     }
 ]
