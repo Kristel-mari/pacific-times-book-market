@@ -1,21 +1,188 @@
-<h2>Vendor Orders</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendor Orders</title>
 
-<table border="1">
-<tr>
-    <th>Vendor</th>
-    <th>Book</th>
-    <th>Quantity</th>
-    <th>Status</th>
-    <th>Date</th>
-</tr>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3fb;
+            margin: 0;
+            padding: 20px;
+            color: #16325c;
+        }
 
-{% for order in orders %}
-<tr>
-    <td>{{ order.vendor_name }}</td>
-    <td>{{ order.book_title }}</td>
-    <td>{{ order.quantity }}</td>
-    <td>{{ order.status }}</td>
-    <td>{{ order.order_date }}</td>
-</tr>
-{% endfor %}
-</table>
+        .page-wrapper {
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+
+        .top-storefront-link {
+            display: inline-block;
+            padding: 10px 16px;
+            background: white;
+            color: #1f3f8f;
+            text-decoration: none;
+            border: 1px solid #dde6f7;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .employee-header {
+            background: #2f64e0;
+            color: white;
+            padding: 26px 30px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+        }
+
+        .employee-header h1 {
+            margin: 0;
+            font-size: 34px;
+        }
+
+        .ribbon-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: #edf0f6;
+            border-radius: 18px;
+            padding: 8px;
+            margin-bottom: 18px;
+            border: 1px solid #dde6f7;
+        }
+
+        .ribbon-button {
+            padding: 11px 16px;
+            background: transparent;
+            color: #1f3f8f;
+            text-decoration: none;
+            border-radius: 14px;
+            font-weight: 600;
+        }
+
+        .ribbon-button.active,
+        .ribbon-button:hover {
+            background: white;
+            color: #1b1d2e;
+        }
+
+        .panel {
+            background: white;
+            border: 1px solid #e2e5ee;
+            border-radius: 24px;
+            padding: 24px;
+        }
+
+        .panel h2 {
+            margin-top: 0;
+            color: #214fd1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #ececf3;
+            text-align: left;
+        }
+
+        th {
+            color: #214fd1;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .status-ordered {
+            background: #214fd1;
+        }
+
+        .status-received {
+            background: #16c04d;
+        }
+
+        .status-delayed {
+            background: #ff3131;
+        }
+
+        .empty-row {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+    <a class="top-storefront-link" href="/">← Return to Storefront</a>
+
+    <div class="employee-header">
+        <h1>Vendor Orders</h1>
+        <p>Signed in as {{ employee_name }}</p>
+    </div>
+
+    <div class="ribbon-bar">
+        <a class="ribbon-button" href="{{ url_for('employee_dashboard') }}">Dashboard</a>
+        <a class="ribbon-button" href="{{ url_for('employee_sales_log') }}">Sales</a>
+        <a class="ribbon-button" href="{{ url_for('employee_inventory') }}">Inventory</a>
+        <a class="ribbon-button active" href="{{ url_for('employee_vendor_orders') }}">Vendor Orders</a>
+    </div>
+
+    <div class="panel">
+        <h2>Vendor Order List</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Vendor</th>
+                    <th>Book</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.vendor_name }}</td>
+                    <td>{{ order.book_title }}</td>
+                    <td>{{ order.quantity }}</td>
+                    <td>
+                        {% if order.status == "Received" %}
+                            <span class="status-badge status-received">Received</span>
+                        {% elif order.status == "Delayed" %}
+                            <span class="status-badge status-delayed">Delayed</span>
+                        {% else %}
+                            <span class="status-badge status-ordered">Ordered</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ order.order_date }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="empty-row">No vendor orders found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</body>
+</html>
