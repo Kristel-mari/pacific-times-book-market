@@ -5,10 +5,11 @@ import os
 import shutil
 import csv
 from io import StringIO
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = "pacific_times_secret_key"
+app.permanent_session_lifetime = timedelta(days=30)
 
 DATA_FILE = "books.json"
 BACKUP_FOLDER = "backups"
@@ -464,6 +465,7 @@ def customer_signin():
         customer_email = request.form.get("customer_email", "").strip()
 
         if customer_name and customer_email:
+            session.permanent = True
             session["user_role"] = "customer"
             session["customer_name"] = customer_name
             session["customer_email"] = customer_email
@@ -475,6 +477,11 @@ def customer_signin():
         )
 
     return render_template("customer_signin.html", error_message="")
+
+@app.route("/customer-logout")
+def customer_logout():
+    session.clear()
+    return redirect(url_for("home"))
 
 
 @app.route("/customer-dashboard", methods=["GET"])
