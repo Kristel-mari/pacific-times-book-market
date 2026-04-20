@@ -334,6 +334,8 @@ def login_required(role=None):
 @app.route("/")
 def home():
     books = get_books()
+    feedback = load_feedback()
+    feedback = sorted(feedback, key=lambda x: x.get("submitted_at", ""), reverse=True)
 
     title_query = request.args.get("title", "").strip()
     author_query = request.args.get("author", "").strip()
@@ -361,6 +363,18 @@ def home():
         cart_items=cart_items,
         cart_total=cart_total,
         cart_count=cart_count,
+        feedback=feedback,
+    )
+
+
+@app.route("/feedback", methods=["GET"])
+def feedback_page():
+    feedback = load_feedback()
+    feedback = sorted(feedback, key=lambda x: x.get("submitted_at", ""), reverse=True)
+
+    return render_template(
+        "feedback.html",
+        feedback=feedback
     )
 
 
@@ -496,43 +510,18 @@ def submit_feedback():
             "rating": rating if rating else "Not Provided",
             "message": message,
             "status": "New",
-            "submitted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "submitted_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "manager_response": ""
         }
 
         feedback.append(feedback_entry)
         save_feedback(feedback)
 
+    referrer = request.referrer
+    if referrer and "/feedback" in referrer:
+        return redirect(url_for("feedback_page"))
+
     return redirect(url_for("home"))
-
-
-@app.route("/employee-feedback", methods=["GET"])
-@login_required("employee")
-def employee_feedback():
-    employee_name = session.get("employee_name", "Store Employee")
-    feedback = load_feedback()
-    feedback = sorted(feedback, key=lambda x: x.get("submitted_at", ""), reverse=True)
-
-    return render_template(
-        "employee_feedback.html",
-        employee_name=employee_name,
-        feedback=feedback
-    )
-
-
-@app.route("/update-feedback-status/<int:feedback_id>", methods=["POST"])
-@login_required("employee")
-def update_feedback_status(feedback_id):
-    new_status = request.form.get("status", "").strip()
-    feedback = load_feedback()
-
-    for item in feedback:
-        if item.get("id") == feedback_id:
-            if new_status:
-                item["status"] = new_status
-            break
-
-    save_feedback(feedback)
-    return redirect(url_for("employee_feedback"))
 
 
 @app.route("/employee-signin", methods=["GET"])
@@ -566,7 +555,12 @@ def employee_dashboard():
     employee_name = session.get("employee_name", "Store Employee")
     books = get_books()
     total_orders, total_revenue = get_sales_summary()
-    feedback_count = len(load_feedback())
+    all_feedback = load_feedback()
+
+    feedback_count = len([
+        item for item in all_feedback
+        if item.get("status") != "Resolved"
+    ])
 
     return render_template(
         "employee_dashboard.html",
@@ -594,6 +588,17 @@ def employee_inventory():
         books=books,
         total_titles=total_titles,
         total_inventory=total_inventory,
+    )
+
+
+@app.route("/backup")
+@login_required("employee")
+def backup_page():
+    employee_name = session.get("employee_name", "Store Employee")
+
+    return render_template(
+        "backup.html",
+        employee_name=employee_name
     )
 
 
@@ -630,7 +635,12 @@ def employee_restock():
         restock_message = "Inventory update could not be completed. Please enter a valid quantity."
 
     total_orders, total_revenue = get_sales_summary()
-    feedback_count = len(load_feedback())
+    all_feedback = load_feedback()
+
+    feedback_count = len([
+        item for item in all_feedback
+        if item.get("status") != "Resolved"
+    ])
 
     return render_template(
         "employee_dashboard.html",
@@ -895,23 +905,76 @@ def employee_vendor_orders():
     )
 
 
-@app.route("/restore-backup", methods=["POST"])
+@app.route("/employee-feedback", methods=["GET"])
 @login_required("employee")
-def restore_backup():
-    employee_name = request.form.get("employee_name", "").strip()
-    success, message = restore_latest_backup()
-    total_orders, total_revenue = get_sales_summary()
-    feedback_count = len(load_feedback())
+def employee_feedback():
+    employee_name = session.get("employee_name", "Store Employee")
+    tab = request.args.get("tab", "open").strip().lower()
+
+    all_feedback = load_feedback()
+
+    if tab == "resolved":
+        feedback = [item for item in all_feedback if item.get("status") == "Resolved"]
+    else:
+        tab = "open"
+        feedback = [item for item in all_feedback if item.get("status") != "Resolved"]
+
+    feedback = sorted(feedback, key=lambda x: x.get("submitted_at", ""), reverse=True)
+
+    open_count = len([item for item in all_feedback if item.get("status") != "Resolved"])
+    resolved_count = len([item for item in all_feedback if item.get("status") == "Resolved"])
 
     return render_template(
-        "employee_dashboard.html",
-        employee_name=employee_name if employee_name else session.get("employee_name", "Store Employee"),
-        books=get_books(),
-        restock_message=message,
-        total_orders=total_orders,
-        total_revenue=total_revenue,
-        feedback_count=feedback_count,
+        "employee_feedback.html",
+        employee_name=employee_name,
+        feedback=feedback,
+        current_tab=tab,
+        open_count=open_count,
+        resolved_count=resolved_count
     )
+
+
+@app.route("/update-feedback-status/<int:feedback_id>", methods=["POST"])
+@login_required("employee")
+def update_feedback_status(feedback_id):
+    new_status = request.form.get("status", "").strip()
+    feedback = load_feedback()
+
+    for item in feedback:
+        if item.get("id") == feedback_id:
+            if new_status:
+                item["status"] = new_status
+            break
+
+    save_feedback(feedback)
+    return redirect(url_for("employee_feedback"))
+
+
+@app.route("/respond-to-feedback/<int:feedback_id>", methods=["POST"])
+@login_required("employee")
+def respond_to_feedback(feedback_id):
+    manager_response = request.form.get("manager_response", "").strip()
+    feedback = load_feedback()
+
+    for item in feedback:
+        if item.get("id") == feedback_id:
+            item["manager_response"] = manager_response
+
+            if manager_response:
+                item["status"] = "Resolved"
+            break
+
+    save_feedback(feedback)
+    return redirect(url_for("employee_feedback"))
+
+
+@app.route("/delete-feedback/<int:feedback_id>", methods=["POST"])
+@login_required("employee")
+def delete_feedback(feedback_id):
+    feedback = load_feedback()
+    updated_feedback = [item for item in feedback if item.get("id") != feedback_id]
+    save_feedback(updated_feedback)
+    return redirect(url_for("employee_feedback"))
 
 
 @app.route("/create-backup", methods=["POST"])
@@ -922,13 +985,42 @@ def create_backup():
     backup_books()
 
     total_orders, total_revenue = get_sales_summary()
-    feedback_count = len(load_feedback())
+    all_feedback = load_feedback()
+
+    feedback_count = len([
+        item for item in all_feedback
+        if item.get("status") != "Resolved"
+    ])
 
     return render_template(
         "employee_dashboard.html",
         employee_name=employee_name if employee_name else session.get("employee_name", "Store Employee"),
         books=get_books(),
         restock_message="Backup created successfully.",
+        total_orders=total_orders,
+        total_revenue=total_revenue,
+        feedback_count=feedback_count,
+    )
+
+
+@app.route("/restore-backup", methods=["POST"])
+@login_required("employee")
+def restore_backup():
+    employee_name = request.form.get("employee_name", "").strip()
+    success, message = restore_latest_backup()
+    total_orders, total_revenue = get_sales_summary()
+    all_feedback = load_feedback()
+
+    feedback_count = len([
+        item for item in all_feedback
+        if item.get("status") != "Resolved"
+    ])
+
+    return render_template(
+        "employee_dashboard.html",
+        employee_name=employee_name if employee_name else session.get("employee_name", "Store Employee"),
+        books=get_books(),
+        restock_message=message,
         total_orders=total_orders,
         total_revenue=total_revenue,
         feedback_count=feedback_count,

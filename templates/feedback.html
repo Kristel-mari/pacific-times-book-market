@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Feedback</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f3f5;
+            color: #111;
+            padding: 30px;
+            margin: 0;
+        }
+
+        .page-header {
+            margin-bottom: 24px;
+        }
+
+        .page-header a {
+            display: inline-block;
+            margin-bottom: 14px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px 0;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #555;
+        }
+
+        .feedback-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .feedback-form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .feedback-form input,
+        .feedback-form textarea,
+        .feedback-form select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #d6d6d6;
+            font-size: 15px;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        .feedback-submit-btn {
+            background: #050505;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 22px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .feedback-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .feedback-item {
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .feedback-item p {
+            margin-top: 8px;
+            color: #555;
+        }
+
+        .response {
+            background: #eef6ff;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-header">
+        <a href="{{ url_for('home') }}">← Back to Store</a>
+        <h1>Customer Feedback</h1>
+        <p>Leave a review and see what other customers are saying.</p>
+    </div>
+
+    <div class="feedback-card">
+        <form class="feedback-form" method="POST" action="{{ url_for('submit_feedback') }}">
+            <input type="text" name="name" placeholder="Your name (optional)">
+
+            <select name="rating" required>
+                <option value="">Select a rating</option>
+                <option value="1">⭐ 1 Star</option>
+                <option value="2">⭐⭐ 2 Stars</option>
+                <option value="3">⭐⭐⭐ 3 Stars</option>
+                <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+            </select>
+
+            <textarea name="message" placeholder="Write your feedback..." rows="4" required></textarea>
+            <button class="feedback-submit-btn" type="submit">Submit Feedback</button>
+        </form>
+    </div>
+
+    {% if feedback %}
+        <div class="feedback-list">
+            {% for item in feedback %}
+                <div class="feedback-item">
+                    <strong>{{ item.name if item.name else 'Anonymous' }}</strong>
+
+                    <p>
+                        <strong>Rating:</strong>
+                        {% set stars = item.rating|int if item.rating and item.rating != 'Not Provided' else 0 %}
+                        {% for _ in range(stars) %}⭐{% endfor %}
+                        {% for _ in range(5 - stars) %}☆{% endfor %}
+                    </p>
+
+                    <p>
+                        <strong>Customer Feedback:</strong><br>
+                        {{ item.message }}
+                    </p>
+
+                    {% if item.manager_response and item.manager_response|trim %}
+                        <div class="response">
+                            <strong>Our Response:</strong><br>
+                            {{ item.manager_response }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No feedback yet.</p>
+    {% endif %}
+
+</body>
+</html>
