@@ -304,6 +304,7 @@
             <a class="ribbon-button {% if active_page == 'inventory' %}active{% endif %}" href="{{ url_for('employee_inventory') }}">Inventory</a>
             <a class="ribbon-button {% if active_page == 'vendor_orders' %}active{% endif %}" href="{{ url_for('employee_vendor_orders') }}">Vendor Orders</a>
             <a class="ribbon-button {% if active_page == 'feedback' %}active{% endif %}" href="{{ url_for('employee_feedback', tab='open') }}">Feedback</a>
+            <a class="ribbon-button {% if active_page == 'backup' %}active{% endif %}" href="{{ url_for('backup_page') }}">Emergency</a>
         </div>
 
         <div class="panel">
