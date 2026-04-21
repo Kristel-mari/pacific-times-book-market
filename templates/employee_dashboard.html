@@ -301,6 +301,40 @@ th {
     background: #6b7280;
 }
 
+.inventory-form-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+}
+
+.form-group label {
+    font-weight: 700;
+    color: #214fd1;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #8fb6ff;
+    font-size: 14px;
+    background: white;
+    color: #16325c;
+}
+
+.button-group {
+    justify-content: flex-end;
+}
+
 @media (max-width: 700px) {
     body {
         padding: 14px;
@@ -425,38 +459,46 @@ th {
             <div class="panel">
                 <h2>Receive Invoice / Add Inventory</h2>
 
-                <form method="POST" action="/employee-restock">
-                    <input type="hidden" name="employee_name" value="{{ employee_name }}" />
+                <form method="POST" action="/employee-restock" class="inventory-form">
+    <input type="hidden" name="employee_name" value="{{ employee_name }}" />
 
-                    <label for="book_id">Select Book</label>
-                    <select name="book_id" id="book_id" required>
-                        {% for book in books %}
-                        <option value="{{ book.id }}">
-                            {{ book.title }} — current stock: {{ book.inventory }}
-                        </option>
-                        {% endfor %}
-                    </select>
+    <div class="inventory-form-row">
+        <div class="form-group">
+            <label>Select Book</label>
+            <select name="book_id" required>
+                {% for book in books %}
+                <option value="{{ book.id }}">
+                    {{ book.title }} — current stock: {{ book.inventory }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
 
-                    <label for="invoice_number">Invoice Number</label>
-                    <input
-                        type="text"
-                        id="invoice_number"
-                        name="invoice_number"
-                        placeholder="Enter invoice number"
-                    />
+        <div class="form-group">
+            <label>Invoice Number</label>
+            <input
+                type="text"
+                name="invoice_number"
+                placeholder="Enter invoice number"
+            />
+        </div>
 
-                    <label for="quantity_received">Quantity Received</label>
-                    <input
-                        type="number"
-                        id="quantity_received"
-                        name="quantity_received"
-                        min="1"
-                        placeholder="Enter quantity received"
-                        required
-                    />
+        <div class="form-group">
+            <label>Quantity Received</label>
+            <input
+                type="number"
+                name="quantity_received"
+                min="1"
+                placeholder="Enter quantity received"
+                required
+            />
+        </div>
 
-                    <button class="submit-button" type="submit">Update Inventory</button>
-                </form>
+        <div class="form-group button-group">
+            <button class="submit-button" type="submit">Update Inventory</button>
+        </div>
+    </div>
+</form>
             </div>
         </div>
     </div>
