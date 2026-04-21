@@ -168,6 +168,71 @@
             margin-bottom: 16px;
             background: #fff;
         }
+        .feedback-card h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    color: #16325c;
+}
+
+.feedback-meta {
+    font-size: 13px;
+    color: #5c6f95;
+    margin-bottom: 10px;
+}
+
+.feedback-message {
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.feedback-section-label {
+    font-weight: 700;
+    color: #214fd1;
+}
+
+.feedback-form {
+    margin-bottom: 12px;
+}
+
+.feedback-select {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #dde6f7;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.feedback-textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid #dde6f7;
+    font-family: inherit;
+    font-size: 14px;
+    margin-bottom: 10px;
+    resize: vertical;
+}
+
+.feedback-textarea:focus,
+.feedback-select:focus {
+    outline: none;
+    border-color: #2f64e0;
+    box-shadow: 0 0 0 2px rgba(47, 100, 224, 0.1);
+}
+
+.delete-button {
+    background: #fff;
+    border: 1px solid #f1c0c0;
+    color: #c0392b;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.delete-button:hover {
+    background: #ffeaea;
+}
 
         .feedback-top {
             display: flex;
@@ -294,51 +359,72 @@
                    class="tab-button {% if current_tab == 'resolved' %}active{% endif %}">Resolved Feedback</a>
             </div>
 
-            {% if feedback_list and feedback_list|length > 0 %}
-                {% for item in feedback_list %}
-                    <div class="feedback-card">
-                        <div class="feedback-top">
-                            <div>
-                                <p class="feedback-name">{{ item.customer_name if item.customer_name else 'Customer' }}</p>
-                                <p class="feedback-meta">
-                                    {{ item.date if item.date else 'No date provided' }}
-                                </p>
-                            </div>
+            {% if feedback %}
+    {% for item in feedback %}
+    
+<div class="feedback-card">
+    <h3>{{ item.name }}</h3>
 
-                            <div class="rating-stars">
-                                {% set rating_value = item.rating|int if item.rating is defined and item.rating else 0 %}
-                                {% for _ in range(rating_value) %}★{% endfor %}
-                                {% for _ in range(5 - rating_value) %}☆{% endfor %}
-                            </div>
-                        </div>
+    <div class="feedback-meta">
+        Email: {{ item.email if item.email else 'Not Provided' }} |
+        Rating: {{ item.rating if item.rating else 'Not Provided' }} |
+        Submitted: {{ item.submitted_at if item.submitted_at else 'Not Available' }} |
+        Status: <strong>{{ item.status if item.status else 'New' }}</strong>
+    </div>
 
-                        {% if item.book_title %}
-                            <div class="feedback-book">Book: {{ item.book_title }}</div>
-                        {% endif %}
+    <div class="feedback-message">
+        <span class="feedback-section-label">Customer Message:</span><br>
+        {{ item.message }}
+    </div>
 
-                        <p class="feedback-text">{{ item.review if item.review else item.comment if item.comment else 'No written feedback provided.' }}</p>
+    {% if item.manager_response %}
+    <div class="feedback-message">
+        <span class="feedback-section-label">Manager Response:</span><br>
+        {{ item.manager_response }}
+    </div>
+    {% endif %}
 
-                        <div class="feedback-actions">
-                            {% if current_tab == 'open' %}
-                                <form method="POST" action="{{ url_for('resolve_feedback') }}" class="inline-form">
-                                    <input type="hidden" name="feedback_id" value="{{ item.id }}">
-                                    <button type="submit" class="primary-button">Mark Resolved</button>
-                                </form>
-                            {% else %}
-                                <form method="POST" action="{{ url_for('reopen_feedback') }}" class="inline-form">
-                                    <input type="hidden" name="feedback_id" value="{{ item.id }}">
-                                    <button type="submit" class="secondary-action-button">Reopen</button>
-                                </form>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty-state">
-                    No feedback found in this section.
-                </div>
-            {% endif %}
-        </div>
+    {% if current_tab == 'open' %}
+
+    <form method="POST" action="/update-feedback-status/{{ item.id }}" class="feedback-form">
+        <select name="status" class="feedback-select">
+            <option value="New" {% if item.status == 'New' %}selected{% endif %}>New</option>
+            <option value="Reviewed" {% if item.status == 'Reviewed' %}selected{% endif %}>Reviewed</option>
+            <option value="Resolved" {% if item.status == 'Resolved' %}selected{% endif %}>Resolved</option>
+        </select>
+
+        <button type="submit" class="primary-button">Update Status</button>
+    </form>
+
+    <form method="POST" action="/respond-to-feedback/{{ item.id }}" class="feedback-form">
+        <textarea
+            name="manager_response"
+            rows="4"
+            class="feedback-textarea"
+            placeholder="Write a response or follow-up."
+        >{{ item.manager_response if item.manager_response else '' }}</textarea>
+
+        <button type="submit" class="primary-button">Save Response</button>
+    </form>
+
+    {% endif %}
+
+    <form method="POST" action="/delete-feedback/{{ item.id }}">
+        <button
+            type="submit"
+            class="delete-button"
+            onclick="return confirm('Are you sure you want to delete this feedback?');"
+        >
+            Delete Feedback
+        </button>
+    </form>
+</div>
+{% endfor %}
+{% else %}
+    <div class="empty-state">
+        No feedback found in this tab.
+    </div>
+{% endif %}
     </div>
 </body>
 </html>
