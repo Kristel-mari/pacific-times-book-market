@@ -18,5 +18,25 @@
         "status": "New",
         "submitted_at": "2026-04-19 23:24:27",
         "manager_response": ""
+    },
+    {
+        "id": 3,
+        "name": "Sam",
+        "email": "",
+        "rating": "5",
+        "message": "Speedy delivery",
+        "status": "New",
+        "submitted_at": "2026-04-20 21:54:01",
+        "manager_response": ""
+    },
+    {
+        "id": 4,
+        "name": "Steve",
+        "email": "",
+        "rating": "4",
+        "message": "Best found quality",
+        "status": "Resolved",
+        "submitted_at": "2026-04-20 22:05:35",
+        "manager_response": "Thanks for the feedback"
     }
 ]

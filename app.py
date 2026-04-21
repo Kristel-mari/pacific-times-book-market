@@ -367,16 +367,13 @@ def home():
         feedback=feedback,
     )
 
-
-@app.route("/feedback", methods=["GET"])
+@app.route("/feedback")
 def feedback_page():
-    feedback = load_feedback()
-    feedback = sorted(feedback, key=lambda x: x.get("submitted_at", ""), reverse=True)
-
     return render_template(
         "feedback.html",
-        feedback=feedback
+        feedback=load_feedback()
     )
+
 
 
 @app.route("/add-to-cart/<int:book_id>", methods=["POST"])

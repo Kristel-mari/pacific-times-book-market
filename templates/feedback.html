@@ -154,21 +154,39 @@
         </div>
 
         <div class="feedback-card">
-            <form class="feedback-form" method="POST" action="{{ url_for('submit_feedback') }}">
-                <input type="text" name="name" placeholder="Your name (optional)">
+            <form method="POST" action="{{ url_for('submit_feedback') }}" class="feedback-form">
+    <input
+        type="text"
+        name="name"
+        placeholder="Your name (optional)"
+        class="input-field name-field"
+    />
 
-                <select name="rating" required>
-                    <option value="">Select a rating</option>
-                    <option value="1">⭐ 1 Star</option>
-                    <option value="2">⭐⭐ 2 Stars</option>
-                    <option value="3">⭐⭐⭐ 3 Stars</option>
-                    <option value="4">⭐⭐⭐⭐ 4 Stars</option>
-                    <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
-                </select>
+    <input
+        type="email"
+        name="email"
+        placeholder="Your email (optional)"
+        class="input-field name-field"
+    />
 
-                <textarea name="message" placeholder="Write your feedback..." rows="4" required></textarea>
-                <button class="feedback-submit-btn" type="submit">Submit Feedback</button>
-            </form>
+    <select name="rating" class="input-field rating-field" required>
+        <option value="">Select a rating</option>
+        <option value="5">★★★★★</option>
+        <option value="4">★★★★☆</option>
+        <option value="3">★★★☆☆</option>
+        <option value="2">★★☆☆☆</option>
+        <option value="1">★☆☆☆☆</option>
+    </select>
+
+    <textarea
+        name="message"
+        placeholder="Write your feedback..."
+        class="textarea-field"
+        required
+    ></textarea>
+
+    <button type="submit" class="submit-button">Submit Feedback</button>
+</form>
         </div>
 
         {% if feedback %}
