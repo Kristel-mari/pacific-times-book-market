@@ -64,5 +64,20 @@
         ],
         "total_price": 18.99,
         "sale_date": "2026-04-12 21:19:33"
+    },
+    {
+        "order_number": "ORD-20260430225727",
+        "customer_name": "Kristel",
+        "employee_name": "System",
+        "items": [
+            {
+                "title": "The Silent Library",
+                "price": 18.99,
+                "quantity": 1,
+                "subtotal": 18.99
+            }
+        ],
+        "total_price": 18.99,
+        "sale_date": "2026-04-30 22:57:27"
     }
 ]

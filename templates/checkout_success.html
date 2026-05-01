@@ -2,30 +2,119 @@
 <html>
 <head>
     <title>Order Complete</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f4f6fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #555;
+            margin: 8px 0;
+        }
+
+        .order-number {
+            background: #eef2ff;
+            padding: 10px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 0 20px;
+            font-weight: bold;
+            color: #3f51b5;
+        }
+
+        h3 {
+            margin-top: 25px;
+            color: #2c3e50;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+        }
+
+        li {
+            background: #f9fafc;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .total {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a237e;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 20px;
+            background: #3f51b5;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        a:hover {
+            background: #2c3e9f;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Order Complete</h1>
+<div class="container">
 
-<p>Thank you, {{ customer_name }}!</p>
+    <h1>Order Complete</h1>
 
-<p><strong>Order Number:</strong> {{ order_number }}</p>
+    <p>Thank you, <strong>{{ customer_name }}</strong>!</p>
 
-<h3>Items Purchased:</h3>
+    <div class="order-number">
+        Order #: {{ order_number }}
+    </div>
 
-<ul>
-{% for item in cart_items %}
-    <li>
-        {{ item.title }} - Qty: {{ item.quantity }} - ${{ item.subtotal }}
-    </li>
-{% endfor %}
-</ul>
+    <h3>Items Purchased</h3>
 
-<h3>Total Paid: ${{ cart_total }}</h3>
+    <ul>
+    {% for item in cart_items %}
+        <li>
+            <strong>{{ item.title }}</strong><br>
+            Qty: {{ item.quantity }} | ${{ item.subtotal }}
+        </li>
+    {% endfor %}
+    </ul>
 
-<br>
+    <div class="total">
+        Total Paid: ${{ cart_total }}
+    </div>
 
-<a href="{{ url_for('home') }}">Return to Store</a>
+    <a href="{{ url_for('home') }}">Return to Store</a>
+
+</div>
 
 </body>
 </html>
